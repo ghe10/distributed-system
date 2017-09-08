@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="dependencies">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/dependencies/curator-client-2.11.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dependencies/zookeeper-3.4.9.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dependencies/zookeeper-intellij.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dependencies/curator-framework-2.11.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
