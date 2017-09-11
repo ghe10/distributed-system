@@ -1,6 +1,5 @@
 package cluster;
 
-import org.apache.zookeeper.server.NIOServerCnxn;
 import org.apache.zookeeper.server.NIOServerCnxnFactory;
 import org.apache.zookeeper.server.ServerCnxnFactory;
 import org.apache.zookeeper.server.ZKDatabase;
@@ -10,6 +9,10 @@ import org.apache.zookeeper.server.quorum.QuorumPeerConfig;
 
 import java.io.File;
 import java.io.IOException;
+
+/**
+ * The server bootstrap functions are moved to Server.java. This file is no longer used in the system
+ */
 
 public class ZooKeeperServer {
     private QuorumPeerConfig zooKeeperServerConfig;
