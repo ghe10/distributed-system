@@ -1,4 +1,4 @@
-package cluster;
+package cluster.server;
 
 import org.apache.zookeeper.server.quorum.QuorumPeer;
 import org.apache.zookeeper.server.quorum.QuorumPeerConfig;
