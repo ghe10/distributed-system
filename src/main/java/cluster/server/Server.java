@@ -32,6 +32,7 @@ public class Server extends QuorumPeerMain implements Runnable {
             runFromConfig(zkConfig);
         } catch (IOException exception) {
             System.err.println("*************** server bootstrap failed ****************");
+            exception.printStackTrace();
         }
     }
 
