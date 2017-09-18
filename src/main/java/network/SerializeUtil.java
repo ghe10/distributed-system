@@ -41,7 +41,10 @@ public class SerializeUtil {
             object = objectInputStream.readObject();
             objectInputStream.close();
             byteArrayInputStream.close();
-        } catch (IOException | ClassNotFoundException exception) {
+        } catch (IOException exception) {
+            exception.printStackTrace();
+            return null;
+        } catch (ClassNotFoundException exception) {
             exception.printStackTrace();
             return null;
         }

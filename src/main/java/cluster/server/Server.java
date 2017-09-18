@@ -77,7 +77,7 @@ public class Server extends QuorumPeerMain implements Runnable {
                 System.out.println("Directory " + listOfFiles[i].getName());
             }
         }
-        Server server = new Server("src/cluster/config/configuration.cfg");
+        Server server = new Server("src/main/java/cluster/config/configuration.cfg");
         Thread t = new Thread(server);
         t.start();
         scanner.next();

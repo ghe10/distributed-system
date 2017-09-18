@@ -41,8 +41,10 @@ public class AdminClient implements Watcher {
             }
         } catch (KeeperException.NoNodeException exception) {
             System.out.println("Master doesn't exist !!");
-        } catch (KeeperException | InterruptedException exception) {
+        } catch (KeeperException exception) {
             System.err.println(String.format("Exception in listState: %s ", exception));
+        } catch (InterruptedException exception) {
+
         }
     }
 
