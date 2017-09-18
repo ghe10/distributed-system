@@ -68,7 +68,8 @@ public class Server extends QuorumPeerMain implements Runnable {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        File folder = new File("src/");
+        File folder = new File(".");
+        String input = "";
         File[] listOfFiles = folder.listFiles();
         for (int i = 0; i < listOfFiles.length; i++) {
             if (listOfFiles[i].isFile()) {
@@ -77,14 +78,18 @@ public class Server extends QuorumPeerMain implements Runnable {
                 System.out.println("Directory " + listOfFiles[i].getName());
             }
         }
-        Server server = new Server("src/main/java/cluster/config/configuration.cfg");
+        Server server = new Server("config/configuration.cfg");
         Thread t = new Thread(server);
         t.start();
-        scanner.next();
-        System.out.println(server.isLeader());
-        System.out.println(server.isRunning());
+
+        while (!input.equals("q")) {
+            input = scanner.next();
+            System.out.println("******************** status *******************");
+            boolean leaderStatus = server.isLeader();
+            System.out.println(String.format("Isleader : %s", leaderStatus));
+            System.out.println(String.format("Isrunning : %s", server.isRunning()));
+        }
         server.shutDown();
-        System.out.println(server.isRunning());
         System.exit(-1);
     }
 }

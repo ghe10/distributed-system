@@ -1,0 +1,15 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="DS:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/DS_jar</output-path>
+    <root id="archive" name="DS.jar">
+      <element id="module-output" name="DS" />
+      <element id="module-test-output" name="DS" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/zookeeper-3.4.10.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/slf4j-api-1.6.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/slf4j-log4j12-1.6.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/netty-3.10.5.Final.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/log4j-1.2.16.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jline-0.9.94.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
