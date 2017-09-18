@@ -65,7 +65,6 @@ public class Worker implements Watcher {
     }
 
     private AsyncCallback.StringCallback createWorkerCallback = new AsyncCallback.StringCallback() {
-        @Override
         public void processResult(int rc, String path, Object ctx, String name) {
             switch (KeeperException.Code.get(rc)) {
                 case CONNECTIONLOSS:
@@ -86,7 +85,6 @@ public class Worker implements Watcher {
     };
 
     private AsyncCallback.StatCallback statusUpdateCallback = new AsyncCallback.StatCallback() {
-        @Override
         public void processResult(int rc, String path, Object ctx, Stat stat) {
             switch(KeeperException.Code.get(rc)) {
                 case CONNECTIONLOSS:
