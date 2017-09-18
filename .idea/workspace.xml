@@ -6,14 +6,7 @@
     </artifacts-to-build>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4ea994af-e087-40ba-b53b-1e48330717e9" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/artifacts/DS_jar.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/java/cluster/config/configuration.cfg" afterPath="$PROJECT_DIR$/out/artifacts/DS_jar/config/configuration.cfg" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/cluster/server/Server.class" afterPath="$PROJECT_DIR$/target/classes/cluster/server/Server.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pom.xml" afterPath="$PROJECT_DIR$/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/cluster/server/Server.java" afterPath="$PROJECT_DIR$/src/main/java/cluster/server/Server.java" />
-    </list>
+    <list default="true" id="4ea994af-e087-40ba-b53b-1e48330717e9" name="Default" comment="" />
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -28,8 +21,8 @@
       <file leaf-file-name="Server.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/cluster/server/Server.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="669">
-              <caret line="88" column="74" lean-forward="false" selection-start-line="88" selection-start-column="74" selection-end-line="88" selection-end-column="74" />
+            <state relative-caret-position="201">
+              <caret line="62" column="24" lean-forward="true" selection-start-line="62" selection-start-column="24" selection-end-line="62" selection-end-column="24" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -243,35 +236,6 @@
               <item name="DS" type="b2602c69:ProjectViewProjectNode" />
               <item name="DS" type="462c0819:PsiDirectoryNode" />
               <item name="out" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="DS" type="b2602c69:ProjectViewProjectNode" />
-              <item name="DS" type="462c0819:PsiDirectoryNode" />
-              <item name="out" type="462c0819:PsiDirectoryNode" />
-              <item name="artifacts" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="DS" type="b2602c69:ProjectViewProjectNode" />
-              <item name="DS" type="462c0819:PsiDirectoryNode" />
-              <item name="out" type="462c0819:PsiDirectoryNode" />
-              <item name="artifacts" type="462c0819:PsiDirectoryNode" />
-              <item name="DS_jar" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="DS" type="b2602c69:ProjectViewProjectNode" />
-              <item name="DS" type="462c0819:PsiDirectoryNode" />
-              <item name="out" type="462c0819:PsiDirectoryNode" />
-              <item name="artifacts" type="462c0819:PsiDirectoryNode" />
-              <item name="DS_jar" type="462c0819:PsiDirectoryNode" />
-              <item name="config" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="DS" type="b2602c69:ProjectViewProjectNode" />
-              <item name="DS" type="462c0819:PsiDirectoryNode" />
-              <item name="out" type="462c0819:PsiDirectoryNode" />
-              <item name="artifacts" type="462c0819:PsiDirectoryNode" />
-              <item name="DS_jar" type="462c0819:PsiDirectoryNode" />
-              <item name="data" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="DS" type="b2602c69:ProjectViewProjectNode" />
@@ -497,7 +461,7 @@
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32984293" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.42198953" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.42198953" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -890,8 +854,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/cluster/server/Server.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="669">
-          <caret line="88" column="74" lean-forward="false" selection-start-line="88" selection-start-column="74" selection-end-line="88" selection-end-column="74" />
+        <state relative-caret-position="201">
+          <caret line="62" column="24" lean-forward="true" selection-start-line="62" selection-start-column="24" selection-end-line="62" selection-end-column="24" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
