@@ -10,6 +10,7 @@
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/netty-3.10.5.Final.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/log4j-1.2.16.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/jline-0.9.94.jar" path-in-jar="/" />
+      <element id="library" level="project" name="args4j:args4j:2.33" />
     </root>
   </artifact>
 </component>

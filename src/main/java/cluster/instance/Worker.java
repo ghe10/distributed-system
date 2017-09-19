@@ -4,6 +4,7 @@ import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 
 import java.io.IOException;
+import java.util.Random;
 
 public class Worker implements Watcher {
     private ZooKeeper zooKeeper;
@@ -13,21 +14,24 @@ public class Worker implements Watcher {
     private String name;
     private int sessionTimeOut;
 
-    public Worker(String hostPort, int sessionTimeOut) {
-        this.hostPort = hostPort;
-        this.sessionTimeOut = sessionTimeOut;
-    }
-
-    public Worker(String hostPort) {
-        this.hostPort = hostPort;
-        this.sessionTimeOut = 15000;
-    }
-
     public Worker(String hostPort, String serverId, int sessionTimeOut) {
+        Random random = new Random();
         this.hostPort = hostPort;
-        this.sessionTimeOut = sessionTimeOut;
-        this.serverId = serverId;
+        this.sessionTimeOut = sessionTimeOut != 0 ? sessionTimeOut : 15000;
+        this.serverId = serverId != null ? serverId : String.valueOf(random.nextInt());
         this.name = String.format("worker-%s", serverId);
+    }
+
+    public boolean initWorker() {
+        try {
+            startZooKeeper();
+            register();
+            return true;
+        } catch (InterruptedException exception) {
+            return false;
+        } catch (IOException exception) {
+            return false;
+        }
     }
 
     public void startZooKeeper() throws IOException, InterruptedException {

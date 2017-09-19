@@ -18,6 +18,12 @@ public class Client implements Watcher {
         zooKeeper = new ZooKeeper(hostPort, sessionTimeOut, this);
     }
 
+    public void stopZooKeeper() throws InterruptedException {
+        if (zooKeeper != null) {
+            zooKeeper.close();
+        }
+    }
+
     public String queueCommand(String command) throws KeeperException{
         while (true) {
             try {

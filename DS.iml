@@ -31,5 +31,6 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="zookeeper-3.4.10" level="project" />
+    <orderEntry type="library" name="args4j:args4j:2.33" level="project" />
   </component>
 </module>
