@@ -5,7 +5,6 @@ import cluster.instance.Worker;
 import cluster.server.Server;
 import org.kohsuke.args4j.Option;
 
-import java.io.IOException;
 import java.util.Scanner;
 
 /**
@@ -51,7 +50,7 @@ public class Main {
             // infinite loop for user input
             Scanner scanner = new Scanner(System.in);
             String command = scanner.next();
-            System.out.println(String.format("Input command : %s",command);
+            System.out.println(String.format("Input command : %s",command));
             if (command.equals(Constants.SHUT_DOWN.getValue())) {
                 if (server != null) {
                     server.shutDown();

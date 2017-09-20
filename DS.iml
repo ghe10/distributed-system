@@ -14,23 +14,15 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/zookeeper-3.4.10.jar!/" />
-          <root url="jar://$MODULE_DIR$/lib/slf4j-api-1.6.1.jar!/" />
-          <root url="jar://$MODULE_DIR$/lib/slf4j-log4j12-1.6.1.jar!/" />
-          <root url="jar://$MODULE_DIR$/lib/netty-3.10.5.Final.jar!/" />
-          <root url="jar://$MODULE_DIR$/lib/log4j-1.2.16.jar!/" />
-          <root url="jar://$MODULE_DIR$/lib/jline-0.9.94.jar!/" />
+          <root url="file://$MODULE_DIR$/lib" />
         </CLASSES>
-        <JAVADOC>
-          <root url="jar://$MODULE_DIR$/lib/zookeeper-3.4.10-javadoc.jar!/" />
-        </JAVADOC>
+        <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/lib/zookeeper-3.4.10-sources.jar!/" />
-          <root url="file://$MODULE_DIR$/src/main/java" />
+          <root url="file://$MODULE_DIR$/lib" />
         </SOURCES>
+        <jarDirectory url="file://$MODULE_DIR$/lib" recursive="false" />
+        <jarDirectory url="file://$MODULE_DIR$/lib" recursive="false" type="SOURCES" />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="zookeeper-3.4.10" level="project" />
-    <orderEntry type="library" name="args4j:args4j:2.33" level="project" />
   </component>
 </module>
