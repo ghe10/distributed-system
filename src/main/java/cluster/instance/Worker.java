@@ -40,7 +40,7 @@ public class Worker implements Watcher {
         }
     }
 
-    public void stopZooKeeper() throws InterruptedException {
+    public void stopWorker() throws InterruptedException {
         if (zooKeeper != null) {
             zooKeeper.close();
         }
