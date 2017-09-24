@@ -9,8 +9,12 @@ public enum Constants {
     DEFAULT_HOST_PORT("2181"),
 
     DEFAULT_SESSION_TIMEOUT("15000"),
+    SLEEP_INTERVAL("1000"),
 
-    SHUT_DOWN("quit");
+    SHUT_DOWN("quit"),
+
+    ADD_FILE("add_file"),
+    REMOVE_FILE("remove file");
 
     private String value;
 

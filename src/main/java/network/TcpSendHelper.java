@@ -8,6 +8,10 @@ public class TcpSendHelper {
     private DataOutputStream dataOutputStream;
     public Boolean initSuccess;
 
+    public TcpSendHelper() {
+
+    }
+
     public TcpSendHelper(int port, String ip) {
         try {
             socket = new Socket(ip, port);

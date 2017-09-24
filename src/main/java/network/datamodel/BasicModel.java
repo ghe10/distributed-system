@@ -7,6 +7,10 @@ package network.datamodel;
 public class BasicModel {
     protected Class modelClass;
 
+    BasicModel() {
+
+    }
+
     BasicModel(Class modelClass) {
         this.modelClass = modelClass;
     }
