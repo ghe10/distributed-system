@@ -1,6 +1,7 @@
 package usertool;
 
 import cluster.instance.Client;
+import cluster.instance.Master;
 import cluster.instance.Worker;
 import cluster.server.Server;
 import org.kohsuke.args4j.Option;
@@ -23,10 +24,11 @@ public class Main {
     @Option(name = "-p", usage = "specify host port")
     private static String hostPort = null;
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
         Thread thread = null;
         Server server = null;
         Worker worker = null;
+        Master master = null;
         Client client = null;
         if (mode.equals(Constants.SERVER_MODE.getValue())) {
             configPath = configPath != null ? configPath : Constants.DEFAULT_CONFIG_PATH.getValue();
@@ -35,7 +37,9 @@ public class Main {
             thread.start();
         } else if (mode.equals(Constants.WORKER_MODE.getValue())) {
             hostPort = hostPort != null ? hostPort : Constants.DEFAULT_HOST_PORT.getValue();
-            worker = new Worker(mode, null, Integer.parseInt(Constants.DEFAULT_SESSION_TIMEOUT.getValue()));
+            master = new Master(hostPort, Integer.parseInt(Constants.DEFAULT_SESSION_TIMEOUT.getValue()));
+            master.runForMaster();
+            worker = new Worker(hostPort, null, Integer.parseInt(Constants.DEFAULT_SESSION_TIMEOUT.getValue()));
             while (!worker.initWorker()) {
                 System.out.println("******************* Try init worker ********************");
             }
@@ -56,15 +60,23 @@ public class Main {
             System.out.println(String.format("Input command : %s",command));
             if (command.equals(Constants.SHUT_DOWN.getValue())) {
                 if (server != null) {
-                    server.shutDown();
-                    thread.join(); // may be we don't need this
-                } else if (worker != null) {
-                    worker.stopWorker();
+                    while (!server.shutDown()){ }
+                    try {
+                        thread.join(); // may be we don't need this
+                    } catch (InterruptedException exception) {
+                        System.err.println("**************** Client shut down got exception *****************");
+                    }
                 } else if (client != null) {
-                    client.stopClient();
+                    while (!client.stopClient()) {}
+                } else {
+                    // worker case
+                    while (!worker.shutDown()) { }
+                    while (!master.shutDown()) { }
                 }
+                break;
             } else {
                 // other scenario
+                System.out.println("******************* Invalid input ********************");
             }
         }
     }

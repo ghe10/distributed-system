@@ -6,29 +6,29 @@ import java.io.IOException;
 
 import static org.apache.zookeeper.ZooDefs.Ids.OPEN_ACL_UNSAFE;
 
-public class Client implements Watcher {
-    private ZooKeeper zooKeeper;
-    private String hostPort;
-    private int sessionTimeOut;
+public class Client extends BasicWatcher {
 
     public Client(String hostPort, int sessionTimeOut) {
-        this.hostPort = hostPort;
-        this.sessionTimeOut = sessionTimeOut;
+        super(hostPort, sessionTimeOut);
     }
 
     public boolean initClient() {
         try {
-            zooKeeper = new ZooKeeper(hostPort, sessionTimeOut, this);
+            startZooKeeper();
             return true;
-        } catch (IOException exception) {
-            // log the exception
+        } catch(InterruptedException exception) {
+            return false;
+        } catch(IOException exception) {
             return false;
         }
     }
 
-    public void stopClient() throws InterruptedException {
-        if (zooKeeper != null) {
-            zooKeeper.close();
+    public boolean stopClient() {
+        try {
+            stopZooKeeper();
+            return true;
+        } catch (InterruptedException exception) {
+            return false;
         }
     }
 

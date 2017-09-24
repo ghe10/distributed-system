@@ -4,33 +4,39 @@ import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import org.apache.zookeeper.AsyncCallback.StringCallback;
 
-import java.io.IOException;
 import java.util.Random;
 
 import static org.apache.zookeeper.ZooDefs.Ids.OPEN_ACL_UNSAFE;
 
-public class Master implements Watcher{
-    private ZooKeeper zooKeeper;
-    private String hostPort;
-    private int sessionTimeOut;
+public class Master extends BasicWatcher{
+
     private boolean isLeader;
+    private String serverId;
 
-    String serverId;
-
-    Master(String hostPort) {
-        this.hostPort = hostPort;
-        sessionTimeOut = 15000;
-
+    public Master(String hostPort, int sessionTimeOut) {
+        super(hostPort, sessionTimeOut);
         Random random = new Random();
-        serverId = Long.toString(random.nextLong());
+        serverId = String.valueOf(random.nextInt());
     }
 
-    Master(String hostPort, int sessionTimeOut) {
-        this.hostPort = hostPort;
-        this.sessionTimeOut = sessionTimeOut;
+    public void runForMaster() {
+        masterRegistration();
+        if (isLeader) {
+            // I am Master !!
+            bootstrap();
+        }
     }
 
-    public void bootstrap() {
+    public boolean shutDown() {
+        try {
+            stopZooKeeper();
+            return true;
+        } catch (InterruptedException exception) {
+            return false;
+        }
+    }
+
+    private void bootstrap() {
         // this function will create a bunch of folders in zookeeper for coordination
         createParent("/workers", new byte[0]);
         createParent("/assign", new byte[0]);
@@ -38,24 +44,16 @@ public class Master implements Watcher{
         createParent("/status", new byte[0]);
     }
 
-    public void startZooKeeper() throws IOException, InterruptedException {
-        if (!isStarted()) {
-            zooKeeper = new ZooKeeper(hostPort, sessionTimeOut, this);
-        }
-    }
-
-    public void stopZooKeeper() throws InterruptedException {
-        if (zooKeeper != null) {
-            zooKeeper.close();
-        }
-    }
-
+    /**
+     * This function deal with the master related events. Now it should include master failure
+     * @param event : event received from zooKeeper servers
+     */
+    @Override
     public void process(WatchedEvent event) {
         // to be implemented
-    }
-
-    public boolean isStarted() {
-        return zooKeeper != null;
+        if (event.getType() == Event.EventType.NodeDeleted) {
+            runForMaster();
+        }
     }
 
     public boolean existMaster() {
@@ -73,7 +71,7 @@ public class Master implements Watcher{
         }
     }
 
-    public void runForMaster() throws InterruptedException {
+    private void masterRegistration() {
         while (true) {
             try {
                 zooKeeper.create("/master", serverId.getBytes(), OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
@@ -82,10 +80,17 @@ public class Master implements Watcher{
             } catch (KeeperException.NodeExistsException exception) {
                 isLeader = false;
                 break;
+            }  catch (InterruptedException exception) {
+                isLeader = false;
+                break;
+            } catch (KeeperException.ConnectionLossException exception) {
+                // do nothing, we should try again
             } catch (KeeperException exception) {
-
+                isLeader = false;
+                break;
             }
             if (existMaster()) {
+                isLeader = false;
                 break;
             }
         }
