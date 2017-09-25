@@ -4,14 +4,11 @@ package network.datamodel;
  * This data model represents a file send task, which includes : target ip, target port, file path.
  * To avoid any change to the task after task creation, the parms can't be changed
  */
-public class FileDataModel {
-    private String ip;
+public class FileDataModel extends BasicModel {
     private String filePath;
-    private int port;
 
     public FileDataModel(String ip, int port, String filePath) {
-        this.ip = ip;
-        this.port = port;
+        super(FileObjectModel.class, ip, port);
         this.filePath = filePath;
     }
 

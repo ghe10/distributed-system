@@ -7,12 +7,12 @@ import usertool.Constants;
 import java.util.LinkedList;
 
 public class TcpFileSendHelper implements Runnable {
-    private LinkedList<Object> objectQueue;
+    private LinkedList<FileObjectModel> objectQueue;
     private LinkedList<FileDataModel> fileQueue;
     private boolean shutDown;
     private long sleepInterval;
 
-    public TcpFileSendHelper(LinkedList<Object> objectQueue, LinkedList<FileDataModel> fileQueue) {
+    public TcpFileSendHelper(LinkedList<FileObjectModel> objectQueue, LinkedList<FileDataModel> fileQueue) {
         this.objectQueue = objectQueue;
         this.fileQueue = fileQueue;
         shutDown = false;
@@ -43,7 +43,8 @@ public class TcpFileSendHelper implements Runnable {
                 return;
             }
         }
-        fileObjectModel = new FileObjectModel(fileDataModel.getFilePath(), Constants.ADD_FILE.getValue());
+        fileObjectModel = new FileObjectModel(fileDataModel.getFilePath(), Constants.ADD_FILE.getValue(),
+                fileDataModel.getIp(), Constants.FILE_RECEIVE_PORT.getValue());
         synchronized (objectQueue) {
             objectQueue.add(fileObjectModel);
         }

@@ -6,12 +6,16 @@ package network.datamodel;
  */
 public class BasicModel {
     protected Class modelClass;
+    protected String ip;
+    protected int port;
 
     BasicModel() {
 
     }
 
-    BasicModel(Class modelClass) {
+    BasicModel(Class modelClass, String ip, int port) {
         this.modelClass = modelClass;
+        this.ip = ip;
+        this.port = port;
     }
 }
