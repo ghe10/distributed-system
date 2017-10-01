@@ -1,9 +1,15 @@
 package cluster.instance;
 
+import cluster.util.WorkerInstanceModel;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
+import usertool.Constants;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class Worker extends BasicWatcher {
@@ -39,6 +45,24 @@ public class Worker extends BasicWatcher {
         }
     }
 
+    /**
+     * This function gets the ip and name of the registered workers
+     * @return a list of worker info
+     * @throws InterruptedException
+     * @throws KeeperException
+     */
+    public List<WorkerInstanceModel> getWorkers() throws InterruptedException, KeeperException {
+        List<String> workerNameList = listNodes(Constants.WORKER_PATH.getValue());
+        List<WorkerInstanceModel> workerList = new ArrayList<WorkerInstanceModel>();
+        for (String workerName : workerNameList) {
+            String workerPath = String.format("%s/%s", Constants.WORKER_PATH.getValue(), workerName);
+            byte[] data = zooKeeper.getData(workerPath, false, null);
+            String ipString = new String(data);
+            workerList.add(new WorkerInstanceModel(ipString, workerName));
+        }
+        return workerList;
+    }
+
     @Override
     public void process(WatchedEvent event) {
         // to be implemented
@@ -49,13 +73,21 @@ public class Worker extends BasicWatcher {
         updateStatus(status);
     }
 
+    /**
+     * Maybe we should add a return to distinguish the success of register
+     */
     private void register() {
-        zooKeeper.create(String.format("/worker/worker-%s", serverId),
-                "Idle".getBytes(),
-                ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                CreateMode.PERSISTENT,
-                createWorkerCallback,
-                null);
+        try {
+            String myIp = InetAddress.getLocalHost().getHostAddress();
+            zooKeeper.create(String.format("/worker/worker-%s", serverId),
+                    myIp.getBytes(),
+                    ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                    CreateMode.PERSISTENT,
+                    createWorkerCallback,
+                    null);
+        } catch (UnknownHostException exception) {
+            System.err.println("*************** Error : fail to get my address ****************");
+        }
     }
 
     private AsyncCallback.StringCallback createWorkerCallback = new AsyncCallback.StringCallback() {

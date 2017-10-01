@@ -18,7 +18,15 @@ public enum Constants {
 
     ADD_FILE("add_file"),
     REMOVE_FILE("remove_file"),
-    REQUEST_FILE("request_file");
+    REQUEST_FILE("request_file"),
+
+    MASTER_PATH("/master"),
+    WORKER_PATH("/workers"),
+    TASK_PATH("/task"),
+    ASSIGN_PATH("/assign"),
+    STATUS_PATH("/status");
+
+
 
     private String value;
 

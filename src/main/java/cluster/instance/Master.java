@@ -40,7 +40,7 @@ public class Master extends BasicWatcher{
         // this function will create a bunch of folders in zookeeper for coordination
         createParent("/workers", new byte[0]);
         createParent("/assign", new byte[0]);
-        createParent("tasks", new byte[0]);
+        createParent("/tasks", new byte[0]);
         createParent("/status", new byte[0]);
     }
 

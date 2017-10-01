@@ -3,9 +3,10 @@ package cluster.instance;
 import org.apache.zookeeper.*;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
- * TO avoid init zooKeeper object every where, we add this class as base class
+ * To avoid init zooKeeper object every where, we add this class as base class
  */
 
 public class BasicWatcher implements Watcher {
@@ -28,6 +29,16 @@ public class BasicWatcher implements Watcher {
     protected void stopZooKeeper() throws InterruptedException {
         if (zooKeeper != null) {
             zooKeeper.close();
+        }
+    }
+
+    protected List<String> listNodes(String path) {
+        try {
+            return zooKeeper.getChildren(path, false);
+        } catch (InterruptedException exception) {
+            return null;
+        } catch (KeeperException exception) {
+            return null;
         }
     }
 

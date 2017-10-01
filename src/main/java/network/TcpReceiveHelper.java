@@ -3,7 +3,9 @@ package network;
 import java.io.IOException;
 import java.net.ServerSocket;
 
-
+/**
+ * This class serves as a base class of all the tcp receivers
+ */
 public class TcpReceiveHelper implements Runnable{
     private Boolean initSuccess;
     protected Boolean shutDown;
