@@ -8,12 +8,12 @@ import java.util.LinkedList;
 public class TcpObjectSendHelper extends TcpSendHelper implements Runnable {
     private LinkedList<FileObjectModel> objectQueue;
     private boolean shutDown;
-    private long sleepInverval;
+    private long sleepInterval;
 
     public TcpObjectSendHelper(LinkedList<FileObjectModel> objectQueue) {
         this.objectQueue = objectQueue;
         this.shutDown = false;
-        sleepInverval = Long.parseLong(Constants.SLEEP_INTERVAL.getValue());
+        sleepInterval = Long.parseLong(Constants.SLEEP_INTERVAL.getValue());
     }
 
     public void shutDown() {
@@ -24,7 +24,7 @@ public class TcpObjectSendHelper extends TcpSendHelper implements Runnable {
         while (!shutDown) {
             try {
                 if (objectQueue.isEmpty()) {
-                    Thread.sleep(sleepInverval);
+                    Thread.sleep(sleepInterval);
                 } else {
                     FileObjectModel object = objectQueue.removeFirst();
                     TcpSendHelper tcpSendHelper = new TcpSendHelper(

@@ -17,7 +17,8 @@ public enum Constants {
     SHUT_DOWN("quit"),
 
     ADD_FILE("add_file"),
-    REMOVE_FILE("remove file");
+    REMOVE_FILE("remove_file"),
+    REQUEST_FILE("request_file");
 
     private String value;
 

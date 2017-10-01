@@ -50,6 +50,10 @@ public class TcpFileSendHelper implements Runnable {
         }
     }
 
+    public void shutDown() {
+        shutDown = true;
+    }
+
     public void run() {
         while(!shutDown) {
             try {
