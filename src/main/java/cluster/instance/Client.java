@@ -1,5 +1,8 @@
 package cluster.instance;
 
+import network.TcpReceiveHelper;
+import network.TcpSendHelper;
+import network.datamodel.CommunicationDataModel;
 import network.datamodel.NodeInfoModel;
 import org.apache.zookeeper.*;
 import usertool.Constants;
@@ -10,14 +13,17 @@ import java.util.List;
 import static org.apache.zookeeper.ZooDefs.Ids.OPEN_ACL_UNSAFE;
 
 public class Client extends BasicWatcher {
+    private TcpReceiveHelper tcpReceiveHelper;
 
     public Client(String hostPort, int sessionTimeOut) {
         super(hostPort, sessionTimeOut);
     }
 
     public boolean initClient() {
+        int listenPort = Integer.parseInt(Constants.CLIENT_COMMUNICATION_PORT.getValue());
         try {
             startZooKeeper();
+            tcpReceiveHelper = new TcpReceiveHelper(listenPort);
             return true;
         } catch(InterruptedException exception) {
             return false;
@@ -88,6 +94,44 @@ public class Client extends BasicWatcher {
         }
     }
 
-    
+    private CommunicationDataModel sendRequest(String masterIp, CommunicationDataModel data) {
+        int masterListenPort = Integer.parseInt(Constants.MASTER_COMMUNICATION_PORT.getValue());
+        TcpSendHelper tcpSendHelper = new TcpSendHelper(masterListenPort, masterIp);
+        tcpSendHelper.sendObject(data);
+        return (CommunicationDataModel)tcpReceiveHelper.receive(0); // 0 is interpreted as infinite
+    }
+
+    /* if interrupted the put should fail */
+    public boolean putFile(String path) throws InterruptedException {
+        TcpSendHelper tcpSendHelper = null;
+        NodeInfoModel masterInfo = null;
+        CommunicationDataModel primaryReplicaInfo = null;
+        CommunicationDataModel putRequestInfo = null;
+        CommunicationDataModel putResult = null;
+        int retry = Integer.parseInt(Constants.GET_MASTER_RETRY.getValue());
+        int workerFileReceivePort = Integer.parseInt(Constants.FILE_RECEIVE_PORT.getValue());
+        int putTimeOut = Integer.parseInt(Constants.PUT_TIME_OUT.getValue());
+        long sleepInterval = Long.parseLong(Constants.SLEEP_INTERVAL.getValue());
+        for (; retry > 0; retry--) {
+            masterInfo = getMasterInfo();
+            if (masterInfo != null) {
+                break;
+            }
+            Thread.sleep(sleepInterval);
+        }
+        // if we fail to get master, mission filed
+        if (masterInfo == null) return false;
+        // TODO: init putRequest
+        primaryReplicaInfo = sendRequest(masterInfo.getIp(), putRequestInfo);
+        // TODO: check if allowed to put file
+        tcpSendHelper = new TcpSendHelper(workerFileReceivePort, primaryReplicaInfo.getSenderIp());
+        tcpSendHelper.sendFile(path);
+        // Next we should try to receive
+        putResult = (CommunicationDataModel) tcpReceiveHelper.receive(putTimeOut);
+        if (putResult == null) {
+            return false;
+        }
+        return true;
+    }
 
 }

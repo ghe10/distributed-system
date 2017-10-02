@@ -1,7 +1,9 @@
 package network;
 
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
 
 /**
  * This class serves as a base class of all the tcp receivers
@@ -27,7 +29,27 @@ public class TcpReceiveHelper implements Runnable{
         }
     }
 
-    public Boolean isInitSuccess(){
+    /* should we allocate the byetBuffer somewhere in the try ?? */
+    public Object receive(int timeout) {
+        byte[] byteBuffer = new byte[1024];
+        if (serverSocket == null) {
+            System.err.println("*********** NULL serverSocket in TcpReceiverHelper ************");
+            return null;
+        }
+        try {
+            serverSocket.setSoTimeout(timeout);
+            Socket socket = serverSocket.accept();
+            DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
+            dataInputStream.read(byteBuffer);
+            Object object = SerializeUtil.deserialize(byteBuffer);
+            return object;
+        } catch(IOException exception) {
+            System.err.println("*********** IOException in TcpReceiverHelper ************");
+            return null;
+        }
+    }
+
+    public boolean isInitSuccess(){
         return initSuccess;
     }
 

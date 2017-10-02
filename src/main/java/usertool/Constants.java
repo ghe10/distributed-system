@@ -11,8 +11,14 @@ public enum Constants {
     FILE_RECEIVE_PORT("10000"),
     FILE_OBJECT_RECEIVE_PORT("20000"),
 
+    /* The following ports are for listen */
+    CLIENT_COMMUNICATION_PORT("21000"),
+    MASTER_COMMUNICATION_PORT("22000"),
+
     DEFAULT_SESSION_TIMEOUT("15000"),
+    PUT_TIME_OUT("1200000"), // 120s
     SLEEP_INTERVAL("1000"),
+    GET_MASTER_RETRY("3"),
 
     SHUT_DOWN("quit"),
 
