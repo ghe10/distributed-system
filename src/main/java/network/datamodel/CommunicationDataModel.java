@@ -1,11 +1,26 @@
 package network.datamodel;
 
+/**
+ * Usage:
+ * put ** file ** size
+ * get ** file
+ * remove ** file
+ * append ** target file ** new file ** size
+ */
 public class CommunicationDataModel extends BasicModel {
     private String senderIp;
-    private String command;
-    public CommunicationDataModel(String snederIp, String targetIp, String command, int port) {
+    private String action;
+    private String sourceFile;
+    private String targetFile;
+    private long fileSize;
+
+    public CommunicationDataModel(String senderIp, String targetIp, String action,
+                                  String sourceFile, String targetFile, int port) {
         super(CommunicationDataModel.class, targetIp, port);
         this.senderIp = senderIp;
+        this.action = action;
+        this.sourceFile = sourceFile;
+        this.targetFile = targetFile;
     }
 
     public String getSenderIp() {
@@ -13,7 +28,20 @@ public class CommunicationDataModel extends BasicModel {
     }
 
     /** We the better add sth here for command translation and separation*/
-    public String getCommand() {
-        return command;
+    public String getAction() {
+        return action;
     }
+
+    public String getSourceFile() {
+        return sourceFile;
+    }
+
+    public String getTargetFile() {
+        return targetFile;
+    }
+
+    public long getFileSize() {
+        return fileSize;
+    }
+
 }

@@ -26,6 +26,8 @@ public enum Constants {
     REMOVE_FILE("remove_file"),
     REQUEST_FILE("request_file"),
 
+    PUT_REFUSED_IP("refused"),
+
     MASTER_PATH("/master"),
     WORKER_PATH("/workers"),
     TASK_PATH("/task"),

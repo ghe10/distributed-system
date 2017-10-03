@@ -1,5 +1,6 @@
 package cluster.instance;
 
+import cluster.util.FileSystemUtil;
 import network.TcpReceiveHelper;
 import network.TcpSendHelper;
 import network.datamodel.CommunicationDataModel;
@@ -8,6 +9,8 @@ import org.apache.zookeeper.*;
 import usertool.Constants;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 
 import static org.apache.zookeeper.ZooDefs.Ids.OPEN_ACL_UNSAFE;
@@ -102,16 +105,19 @@ public class Client extends BasicWatcher {
     }
 
     /* if interrupted the put should fail */
-    public boolean putFile(String path) throws InterruptedException {
+    public boolean putFile(String path, String targetPath) throws InterruptedException, UnknownHostException {
+        String myIp = InetAddress.getLocalHost().getHostAddress();
         TcpSendHelper tcpSendHelper = null;
         NodeInfoModel masterInfo = null;
         CommunicationDataModel primaryReplicaInfo = null;
         CommunicationDataModel putRequestInfo = null;
         CommunicationDataModel putResult = null;
         int retry = Integer.parseInt(Constants.GET_MASTER_RETRY.getValue());
+        int masterComReceivePort = Integer.parseInt(Constants.MASTER_COMMUNICATION_PORT.getValue());
         int workerFileReceivePort = Integer.parseInt(Constants.FILE_RECEIVE_PORT.getValue());
         int putTimeOut = Integer.parseInt(Constants.PUT_TIME_OUT.getValue());
         long sleepInterval = Long.parseLong(Constants.SLEEP_INTERVAL.getValue());
+        long fileSize = 0;
         for (; retry > 0; retry--) {
             masterInfo = getMasterInfo();
             if (masterInfo != null) {
@@ -122,8 +128,18 @@ public class Client extends BasicWatcher {
         // if we fail to get master, mission filed
         if (masterInfo == null) return false;
         // TODO: init putRequest
+        fileSize = FileSystemUtil.getFileSize(path);
+        if (fileSize < 0) {
+            // get file size failed
+            return false;
+        }
+        putRequestInfo = new CommunicationDataModel(myIp, masterInfo.getIp(),
+                Constants.ADD_FILE.getValue(),path, targetPath, masterComReceivePort);
         primaryReplicaInfo = sendRequest(masterInfo.getIp(), putRequestInfo);
-        // TODO: check if allowed to put file
+        // check if allowed to put file
+        if (primaryReplicaInfo.getSenderIp().equals(Constants.PUT_REFUSED_IP.getValue())) {
+            return false;
+        }
         tcpSendHelper = new TcpSendHelper(workerFileReceivePort, primaryReplicaInfo.getSenderIp());
         tcpSendHelper.sendFile(path);
         // Next we should try to receive
