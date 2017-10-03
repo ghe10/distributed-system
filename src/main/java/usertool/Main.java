@@ -4,8 +4,13 @@ import cluster.instance.Client;
 import cluster.instance.Master;
 import cluster.instance.Worker;
 import cluster.server.Server;
+import cluster.util.WorkerReceiver;
+import cluster.util.WorkerSender;
+import network.datamodel.FileDataModel;
+import network.datamodel.FileObjectModel;
 import org.kohsuke.args4j.Option;
 
+import java.util.LinkedList;
 import java.util.Scanner;
 
 /**
@@ -24,22 +29,36 @@ public class Main {
     @Option(name = "-p", usage = "specify host port")
     private static String hostPort = null;
 
+    private static LinkedList<Object> objectQueue;
+    private static LinkedList<FileDataModel> fileQueue;
+
     public static void main(String[] args) {
         Thread thread = null;
         Server server = null;
         Worker worker = null;
         Master master = null;
         Client client = null;
+        WorkerReceiver workerReceiver = null;
+        WorkerSender workerSender = null;
         if (mode.equals(Constants.SERVER_MODE.getValue())) {
             configPath = configPath != null ? configPath : Constants.DEFAULT_CONFIG_PATH.getValue();
             server = new Server(configPath);
             thread = new Thread(server);
             thread.start();
         } else if (mode.equals(Constants.WORKER_MODE.getValue())) {
+            objectQueue = new LinkedList<Object>();
             hostPort = hostPort != null ? hostPort : Constants.DEFAULT_HOST_PORT.getValue();
             master = new Master(hostPort, Integer.parseInt(Constants.DEFAULT_SESSION_TIMEOUT.getValue()));
             master.runForMaster();
             worker = new Worker(hostPort, null, Integer.parseInt(Constants.DEFAULT_SESSION_TIMEOUT.getValue()));
+            workerReceiver = new WorkerReceiver(
+                    Integer.parseInt(Constants.FILE_OBJECT_RECEIVE_PORT.getValue()),
+                    Integer.parseInt(Constants.FILE_RECEIVE_PORT.getValue()),
+                    Constants.FS_ROOT_PATH.getValue(),
+                    objectQueue
+            );
+            workerReceiver.init();
+            workerSender = new WorkerSender(objectQueue, fileQueue);
             while (!worker.initWorker()) {
                 System.out.println("******************* Try init worker ********************");
             }

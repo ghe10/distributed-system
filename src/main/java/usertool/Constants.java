@@ -28,6 +28,8 @@ public enum Constants {
 
     PUT_REFUSED_IP("refused"),
 
+    FS_ROOT_PATH("./"),
+
     MASTER_PATH("/master"),
     WORKER_PATH("/workers"),
     TASK_PATH("/task"),
