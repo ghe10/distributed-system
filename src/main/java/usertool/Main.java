@@ -32,14 +32,16 @@ public class Main {
     private static LinkedList<Object> objectQueue;
     private static LinkedList<FileDataModel> fileQueue;
 
+    private static WorkerReceiver workerReceiver = null;
+    private static WorkerSender workerSender = null;
+
     public static void main(String[] args) {
         Thread thread = null;
         Server server = null;
         Worker worker = null;
         Master master = null;
         Client client = null;
-        WorkerReceiver workerReceiver = null;
-        WorkerSender workerSender = null;
+
         if (mode.equals(Constants.SERVER_MODE.getValue())) {
             configPath = configPath != null ? configPath : Constants.DEFAULT_CONFIG_PATH.getValue();
             server = new Server(configPath);
@@ -47,6 +49,7 @@ public class Main {
             thread.start();
         } else if (mode.equals(Constants.WORKER_MODE.getValue())) {
             objectQueue = new LinkedList<Object>();
+            fileQueue = new LinkedList<FileDataModel>();
             hostPort = hostPort != null ? hostPort : Constants.DEFAULT_HOST_PORT.getValue();
             master = new Master(hostPort, Integer.parseInt(Constants.DEFAULT_SESSION_TIMEOUT.getValue()));
             master.runForMaster();

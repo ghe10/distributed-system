@@ -1,9 +1,14 @@
 package cluster.instance;
 
+import network.datamodel.CommunicationDataModel;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import org.apache.zookeeper.AsyncCallback.StringCallback;
+import usertool.Constants;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.LinkedList;
 import java.util.Random;
 
 import static org.apache.zookeeper.ZooDefs.Ids.OPEN_ACL_UNSAFE;
@@ -12,11 +17,13 @@ public class Master extends BasicWatcher{
 
     private boolean isLeader;
     private String serverId;
+    private LinkedList<CommunicationDataModel> comDataList;
 
     public Master(String hostPort, int sessionTimeOut) {
         super(hostPort, sessionTimeOut);
         Random random = new Random();
         serverId = String.valueOf(random.nextInt());
+        comDataList = new LinkedList<CommunicationDataModel>();
     }
 
     public void runForMaster() {
@@ -30,9 +37,58 @@ public class Master extends BasicWatcher{
     public boolean shutDown() {
         try {
             stopZooKeeper();
+            // add sth to stop the thread
             return true;
         } catch (InterruptedException exception) {
             return false;
+        }
+    }
+
+    /* a queue should be in Master class for received user request*/
+    private class MasterThread implements Runnable {
+        // this thread should deal with client request from a queue
+
+        public void run() {
+            long sleepInterval = Long.parseLong(Constants.SLEEP_INTERVAL.getValue());
+            String selfIp = "";
+            try {
+                selfIp = InetAddress.getLocalHost().getHostAddress();
+            } catch (UnknownHostException exception) {
+                // not sure what to do here
+            }
+            CommunicationDataModel comData = null;
+            while (true) {
+                synchronized (comDataList) { // ???????????????/*/*/*/*/**/*/*/*/*/
+                    if (comDataList.isEmpty()) {
+                        comData = null;
+                        try {
+                            Thread.sleep(sleepInterval);
+                        } catch (InterruptedException exception) {
+                            // nothing to do
+                        }
+                    } else {
+                        comData = comDataList.getFirst();
+                        comDataList.removeFirst();
+                    }
+                }
+                if (comData != null) {
+                    String action = comData.getAction();
+                    if (action.equals(Constants.ADD_FILE.getValue())) {
+                        // TODO: use some algorithm to find primary replica
+                        String mainReplicaIp = "";
+
+                        CommunicationDataModel ack = new CommunicationDataModel(); // sth should be here
+                        //TODO: add ack to sender
+
+                    } else if (action.equals(Constants.REQUEST_FILE.getValue())) {
+
+                    } else if (action.equals(Constants.REMOVE_FILE.getValue())) {
+
+                    } else {
+                        System.out.println("*************** Incorrect input *****************");
+                    }
+                }
+            }
         }
     }
 

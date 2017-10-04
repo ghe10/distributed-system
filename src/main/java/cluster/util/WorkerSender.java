@@ -17,7 +17,7 @@ public class WorkerSender {
     private Thread fileThread;
     private Thread objectThread;
 
-    public WorkerSender(LinkedList<FileObjectModel> objectQueue, LinkedList<FileDataModel> fileQueue) {
+    public WorkerSender(LinkedList<Object> objectQueue, LinkedList<FileDataModel> fileQueue) {
         tcpFileSendHelper = new TcpFileSendHelper(objectQueue, fileQueue);
         tcpObjectSendHelper = new TcpObjectSendHelper(objectQueue);
         fileThread = new Thread(tcpFileSendHelper);
