@@ -18,12 +18,14 @@ public class Master extends BasicWatcher{
     private boolean isLeader;
     private String serverId;
     private LinkedList<CommunicationDataModel> comDataList;
+    private LinkedList<Object> communicationSendQueue;
 
-    public Master(String hostPort, int sessionTimeOut) {
+    public Master(String hostPort, int sessionTimeOut, LinkedList<Object> communicationSendQueue) {
         super(hostPort, sessionTimeOut);
         Random random = new Random();
         serverId = String.valueOf(random.nextInt());
         comDataList = new LinkedList<CommunicationDataModel>();
+        this.communicationSendQueue = communicationSendQueue;
     }
 
     public void runForMaster() {
@@ -75,12 +77,25 @@ public class Master extends BasicWatcher{
                     String action = comData.getAction();
                     if (action.equals(Constants.ADD_FILE.getValue())) {
                         // TODO: use some algorithm to find primary replica
+                        // client will send to main replica, replication will be done by main replica
                         String mainReplicaIp = "";
-
-                        CommunicationDataModel ack = new CommunicationDataModel(); // sth should be here
-                        //TODO: add ack to sender
+                        CommunicationDataModel ack = new CommunicationDataModel(selfIp, comData.getSenderIp(),
+                                mainReplicaIp, Constants.ADD_FILE_ACK.getValue(), "", "",
+                                Integer.parseInt(Constants.CLIENT_COMMUNICATION_PORT.getValue())); // sth should be here
+                        synchronized (communicationSendQueue) {
+                            communicationSendQueue.add(ack);
+                        }
 
                     } else if (action.equals(Constants.REQUEST_FILE.getValue())) {
+                        // TODO: use some algorithm to choose the correct replica
+                        // tell a chosen replica to send file to requester
+                        String chosenReplicaIp = "";
+                        CommunicationDataModel ack = new CommunicationDataModel(selfIp, chosenReplicaIp,
+                                comData.getSenderIp(), Constants.ADD_FILE_ACK.getValue(), "", "",
+                                Integer.parseInt(Constants.CLIENT_COMMUNICATION_PORT.getValue())); // sth should be here
+                        synchronized (communicationSendQueue) {
+                            communicationSendQueue.add(ack);
+                        }
 
                     } else if (action.equals(Constants.REMOVE_FILE.getValue())) {
 

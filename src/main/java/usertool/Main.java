@@ -30,6 +30,8 @@ public class Main {
     private static String hostPort = null;
 
     private static LinkedList<Object> objectQueue;
+    private static LinkedList<Object> communicationQueue;
+    // this communicationQueue queue contains the info to send, the receive is handled by master's thread
     private static LinkedList<FileDataModel> fileQueue;
 
     private static WorkerReceiver workerReceiver = null;
@@ -51,9 +53,10 @@ public class Main {
             objectQueue = new LinkedList<Object>();
             fileQueue = new LinkedList<FileDataModel>();
             hostPort = hostPort != null ? hostPort : Constants.DEFAULT_HOST_PORT.getValue();
-            master = new Master(hostPort, Integer.parseInt(Constants.DEFAULT_SESSION_TIMEOUT.getValue()));
+            master = new Master(hostPort, Integer.parseInt(Constants.DEFAULT_SESSION_TIMEOUT.getValue()),
+                    communicationQueue);
             master.runForMaster();
-            worker = new Worker(hostPort, null, Integer.parseInt(Constants.DEFAULT_SESSION_TIMEOUT.getValue()));
+
             workerReceiver = new WorkerReceiver(
                     Integer.parseInt(Constants.FILE_OBJECT_RECEIVE_PORT.getValue()),
                     Integer.parseInt(Constants.FILE_RECEIVE_PORT.getValue()),
@@ -61,10 +64,12 @@ public class Main {
                     objectQueue
             );
             workerReceiver.init();
-            workerSender = new WorkerSender(objectQueue, fileQueue);
+            workerSender = new WorkerSender(objectQueue, fileQueue, communicationQueue);
             while (!worker.initWorker()) {
                 System.out.println("******************* Try init worker ********************");
             }
+            worker = new Worker(hostPort, null, Integer.parseInt(Constants.DEFAULT_SESSION_TIMEOUT.getValue()),
+                    workerSender, workerReceiver);
             // we need another thread to do process the real task, I think it should be init here
         } else {
             // default is client mode

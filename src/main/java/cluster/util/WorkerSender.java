@@ -2,6 +2,7 @@ package cluster.util;
 
 import network.TcpFileSendHelper;
 import network.TcpObjectSendHelper;
+import network.datamodel.CommunicationDataModel;
 import network.datamodel.FileDataModel;
 import network.datamodel.FileObjectModel;
 
@@ -14,16 +15,22 @@ import java.util.LinkedList;
 public class WorkerSender {
     private TcpFileSendHelper tcpFileSendHelper;
     private TcpObjectSendHelper tcpObjectSendHelper;
+    private TcpObjectSendHelper communicationHelper;
     private Thread fileThread;
     private Thread objectThread;
+    private Thread communicationThread;
 
-    public WorkerSender(LinkedList<Object> objectQueue, LinkedList<FileDataModel> fileQueue) {
+    public WorkerSender(LinkedList<Object> objectQueue, LinkedList<FileDataModel> fileQueue,
+                        LinkedList<Object> communicationQueue) {
         tcpFileSendHelper = new TcpFileSendHelper(objectQueue, fileQueue);
         tcpObjectSendHelper = new TcpObjectSendHelper(objectQueue);
+        communicationHelper = new TcpObjectSendHelper(communicationQueue);
         fileThread = new Thread(tcpFileSendHelper);
         objectThread = new Thread(tcpObjectSendHelper);
+        communicationThread = new Thread(communicationHelper);
         fileThread.start();
         objectThread.start();
+        communicationThread.start();
     }
 
     public void addFileTask(FileDataModel fileDataModel) {
@@ -33,9 +40,11 @@ public class WorkerSender {
     public boolean shutDown() {
         tcpFileSendHelper.shutDown();
         tcpObjectSendHelper.shutDown();
+        communicationHelper.shutDown();
         try {
             fileThread.join();
             objectThread.join();
+            communicationThread.join();
         } catch (InterruptedException exception) {
             return false;
         }

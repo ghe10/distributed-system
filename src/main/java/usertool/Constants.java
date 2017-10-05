@@ -25,6 +25,7 @@ public enum Constants {
     ADD_FILE("add_file"),
     REMOVE_FILE("remove_file"),
     REQUEST_FILE("request_file"),
+    ADD_FILE_ACK("add_file_ack"),
 
     PUT_REFUSED_IP("refused"),
 

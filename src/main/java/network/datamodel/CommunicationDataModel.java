@@ -12,23 +12,23 @@ public class CommunicationDataModel extends BasicModel {
     private String action;
     private String sourceFile;
     private String targetFile;
-    private String mainReplicaIp;
+    private String actionDestinationIp;
     private long fileSize;
 
-    public CommunicationDataModel(String senderIp, String targetIp, String action,
+    public CommunicationDataModel(String senderIp, String receiverIp, String action,
                                   String sourceFile, String targetFile, int port) {
-        super(CommunicationDataModel.class, targetIp, port);
+        super(CommunicationDataModel.class, receiverIp, port);
         this.senderIp = senderIp;
         this.action = action;
         this.sourceFile = sourceFile;
         this.targetFile = targetFile;
     }
 
-    public CommunicationDataModel(String senderIp, String targetIp, String mainReplicaIp, String action,
+    public CommunicationDataModel(String senderIp, String targetIp, String actionDestinationIp, String action,
                                   String sourceFile, String targetFile, int port) {
         super(CommunicationDataModel.class, targetIp, port);
         this.senderIp = senderIp;
-        this.mainReplicaIp = mainReplicaIp;
+        this.actionDestinationIp = actionDestinationIp;
         this.action = action;
         this.sourceFile = sourceFile;
         this.targetFile = targetFile;
@@ -52,8 +52,8 @@ public class CommunicationDataModel extends BasicModel {
         return targetFile;
     }
 
-    public String getMainReplicaIp() {
-        return mainReplicaIp;
+    public String getActionDestinationIp() {
+        return actionDestinationIp;
     }
 
     public long getFileSize() {
