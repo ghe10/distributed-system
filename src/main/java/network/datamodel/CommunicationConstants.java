@@ -6,6 +6,7 @@ package network.datamodel;
 public enum CommunicationConstants {
     ACK("ack"),
     SEND("send"),
+    PUT_PRIMARY_REPLICA("put_primary_replica"),
     ADD_REPLICA("add_replica"),
     ADD_REPLICAS("add_replicas"),
     DELETE("delete");

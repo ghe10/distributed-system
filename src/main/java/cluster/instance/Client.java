@@ -3,8 +3,7 @@ package cluster.instance;
 import cluster.util.FileSystemUtil;
 import network.TcpReceiveHelper;
 import network.TcpSendHelper;
-import network.datamodel.CommunicationDataModel;
-import network.datamodel.NodeInfoModel;
+import network.datamodel.*;
 import org.apache.zookeeper.*;
 import usertool.Constants;
 
@@ -112,6 +111,7 @@ public class Client extends BasicWatcher {
         CommunicationDataModel primaryReplicaInfo = null;
         CommunicationDataModel putRequestInfo = null;
         CommunicationDataModel putResult = null;
+        FileObjectModel putFileObjectModel = null;
         int retry = Integer.parseInt(Constants.GET_MASTER_RETRY.getValue());
         int masterComReceivePort = Integer.parseInt(Constants.MASTER_COMMUNICATION_PORT.getValue());
         int workerFileReceivePort = Integer.parseInt(Constants.FILE_RECEIVE_PORT.getValue());
@@ -137,11 +137,15 @@ public class Client extends BasicWatcher {
                 Constants.ADD_FILE.getValue(),path, targetPath, masterComReceivePort);
         primaryReplicaInfo = sendRequest(masterInfo.getIp(), putRequestInfo);
         // check if allowed to put file
-        if (primaryReplicaInfo.getSenderIp().equals(Constants.PUT_REFUSED_IP.getValue())) {
+        if (primaryReplicaInfo.getActionDestinationIp().equals(Constants.PUT_REFUSED_IP.getValue())) {
             return false;
         }
         tcpSendHelper = new TcpSendHelper(workerFileReceivePort, primaryReplicaInfo.getSenderIp());
         tcpSendHelper.sendFile(path);
+        // use a constant to tell we are adding main replica, other replicas should by added by main replica
+        putFileObjectModel = new FileObjectModel(path, CommunicationConstants.PUT_PRIMARY_REPLICA.getValue(),
+                primaryReplicaInfo.getActionDestinationIp(), myIp, Constants.FILE_OBJECT_RECEIVE_PORT.getValue());
+        tcpSendHelper.sendObject(putFileObjectModel);
         // Next we should try to receive
         putResult = (CommunicationDataModel) tcpReceiveHelper.receive(putTimeOut);
         if (putResult == null) {

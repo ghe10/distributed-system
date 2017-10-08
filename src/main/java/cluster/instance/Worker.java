@@ -6,6 +6,7 @@ import cluster.util.WorkerSender;
 import network.datamodel.CommunicationConstants;
 import network.datamodel.CommunicationDataModel;
 import network.datamodel.FileDataModel;
+import network.datamodel.FileObjectModel;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import usertool.Constants;
@@ -26,6 +27,7 @@ public class Worker extends BasicWatcher {
     private WorkerReceiver workerReceiver;
     private LinkedList<CommunicationDataModel> comDataList;
     private LinkedList<Object> communicationSendQueue;
+    private LinkedList<Object> fileSystemObjectQueue;
     private WorkerThread worker;
     private Thread workerThread;
 
@@ -37,6 +39,7 @@ public class Worker extends BasicWatcher {
         this.name = String.format("worker-%s", serverId);
         this.workerSender = workerSender;
         this.workerReceiver = workerReceiver;
+        fileSystemObjectQueue = workerReceiver.objectQueue;
         worker = new WorkerThread();
     }
 
@@ -132,6 +135,59 @@ public class Worker extends BasicWatcher {
                         // TODO: add two replicas
                     } else {
                         // TODO: I don't know...
+                    }
+                }
+            }
+        }
+    }
+
+    private class WorkerFileSystemThread implements Runnable {
+        public void run() {
+            long sleepInterval = Long.parseLong(Constants.SLEEP_INTERVAL.getValue());
+            String selfIp = "";
+            try {
+                selfIp = InetAddress.getLocalHost().getHostAddress();
+            } catch (UnknownHostException exception) {
+                // not sure what to do here
+            }
+            FileObjectModel fileSystemData = null;
+            while (true) {
+                synchronized (fileSystemObjectQueue) { // ???????????????/*/*/*/*/**/*/*/*/*/
+                    if (fileSystemObjectQueue.isEmpty()) {
+                        fileSystemData = null;
+                        try {
+                            Thread.sleep(sleepInterval);
+                        } catch (InterruptedException exception) {
+                            // nothing to do
+                        }
+                    } else {
+                        fileSystemData = (FileObjectModel)fileSystemObjectQueue.getFirst();
+                        fileSystemObjectQueue.removeFirst();
+                    }
+                }
+                if (fileSystemData != null) {
+                    if (fileSystemData.getActionType().equals(CommunicationConstants.PUT_PRIMARY_REPLICA.getValue())) {
+                        for (int i = 0; i < 2; i++) {
+                            // TODO: some what get the two other replica ips
+                            String replicaIp = "Not yet done";
+                            FileDataModel addReplicaTask = new FileDataModel(
+                                    replicaIp,
+                                    Integer.parseInt(Constants.FILE_RECEIVE_PORT.getValue()),
+                                    fileSystemData.getFilePath()
+                            );
+                        }
+                        // TODO: get masterIp here
+                        String masterIp = "";
+                        CommunicationDataModel ackToMaster = new CommunicationDataModel(
+                                selfIp, masterIp, fileSystemData.getSenderIp(),
+                                Constants.ADD_FILE_ACK.getValue(),
+                                fileSystemData.getFilePath(),
+                                fileSystemData.getFilePath(),
+                                Integer.parseInt(Constants.CLIENT_COMMUNICATION_PORT.getValue())
+                        );
+                        synchronized (comDataList) {
+                            comDataList.add(ackToMaster);
+                        }
                     }
                 }
             }

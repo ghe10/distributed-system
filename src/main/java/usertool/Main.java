@@ -10,6 +10,7 @@ import network.datamodel.FileDataModel;
 import network.datamodel.FileObjectModel;
 import org.kohsuke.args4j.Option;
 
+import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.Scanner;
 
@@ -64,7 +65,13 @@ public class Main {
                     objectQueue
             );
             workerReceiver.init();
-            workerSender = new WorkerSender(objectQueue, fileQueue, communicationQueue);
+            try {
+                workerSender = new WorkerSender(objectQueue, fileQueue, communicationQueue);
+            } catch (UnknownHostException exception) {
+                // init failure
+                System.err.println("******************* UnknownHostException ********************");
+                System.exit(-1);
+            }
             while (!worker.initWorker()) {
                 System.out.println("******************* Try init worker ********************");
             }

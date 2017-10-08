@@ -6,6 +6,7 @@ import network.datamodel.CommunicationDataModel;
 import network.datamodel.FileDataModel;
 import network.datamodel.FileObjectModel;
 
+import java.net.UnknownHostException;
 import java.util.LinkedList;
 
 /**
@@ -21,7 +22,7 @@ public class WorkerSender {
     private Thread communicationThread;
 
     public WorkerSender(LinkedList<Object> objectQueue, LinkedList<FileDataModel> fileQueue,
-                        LinkedList<Object> communicationQueue) {
+                        LinkedList<Object> communicationQueue) throws UnknownHostException {
         tcpFileSendHelper = new TcpFileSendHelper(objectQueue, fileQueue);
         tcpObjectSendHelper = new TcpObjectSendHelper(objectQueue);
         communicationHelper = new TcpObjectSendHelper(communicationQueue);

@@ -19,7 +19,7 @@ public class WorkerReceiver {
     private Thread tcpFileReceiverThread;
     private Thread tcpObjectReceiverThread;
 
-    private LinkedList<Object> objectQueue;
+    public LinkedList<Object> objectQueue;
 
     public WorkerReceiver(int objectPort, int filePort, String fileFolder, LinkedList<Object> objectQueue) {
         this.filePort = filePort;

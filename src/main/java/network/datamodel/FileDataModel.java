@@ -4,6 +4,8 @@ package network.datamodel;
  * This data model represents a file send task, which includes : target ip, target port, file path.
  * To avoid any change to the task after task creation, the parms can't be changed
  */
+
+// I think we should depreticate this shit
 public class FileDataModel extends BasicModel {
     private String filePath;
 

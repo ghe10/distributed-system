@@ -4,6 +4,8 @@ import network.datamodel.FileDataModel;
 import network.datamodel.FileObjectModel;
 import usertool.Constants;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.LinkedList;
 
 public class TcpFileSendHelper implements Runnable {
@@ -11,12 +13,14 @@ public class TcpFileSendHelper implements Runnable {
     private LinkedList<FileDataModel> fileQueue;
     private boolean shutDown;
     private long sleepInterval;
+    private String myIp;
 
-    public TcpFileSendHelper(LinkedList<Object> objectQueue, LinkedList<FileDataModel> fileQueue) {
+    public TcpFileSendHelper(LinkedList<Object> objectQueue, LinkedList<FileDataModel> fileQueue) throws UnknownHostException {
         this.objectQueue = objectQueue;
         this.fileQueue = fileQueue;
         shutDown = false;
         sleepInterval = Long.parseLong(Constants.SLEEP_INTERVAL.getValue());
+        myIp = InetAddress.getLocalHost().getHostAddress();
     }
 
     public void addFileTask(FileDataModel fileDataModel) {
@@ -44,7 +48,7 @@ public class TcpFileSendHelper implements Runnable {
             }
         }
         fileObjectModel = new FileObjectModel(fileDataModel.getFilePath(), Constants.ADD_FILE.getValue(),
-                fileDataModel.getIp(), Constants.FILE_RECEIVE_PORT.getValue());
+                fileDataModel.getIp(), myIp, Constants.FILE_RECEIVE_PORT.getValue());
         synchronized (objectQueue) {
             objectQueue.add(fileObjectModel);
         }
