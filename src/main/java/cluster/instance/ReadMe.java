@@ -18,6 +18,18 @@ package cluster.instance;
  * 7. main replica told client
  *  we 'd better set a primary replica
  *
+ * Update up on failure:
+ * 1. each worker will keep checking the zooKeeper by watcher to determine the worker list change
+ * 2. when some one dead:
+ *      1. worker check those file, if : (1) I am main replica of a file (2) if yes and  the dead node contains info related to
+ *         this file. Then : I am responsibility to add more replica and inform the other replicas about the change
+ *         (3)if I am not main replica: remove the dead ip from this file's replication set, save the info struct to another
+ *            queue that marked as wrong
+ *
+ *      2. master will check whether some primary replica died. it reassign new primary replica
+ *
+ *      3. if a worker is assigned as new primary replica: it will check whether we are short of replica. If yes, add one
+ *
  * get strategy:
  * 1. client ask master for file
  * 2. master told replica to send it
