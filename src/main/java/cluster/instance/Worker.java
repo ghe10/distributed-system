@@ -3,36 +3,34 @@ package cluster.instance;
 import cluster.util.WorkerInstanceModel;
 import cluster.util.WorkerReceiver;
 import cluster.util.WorkerSender;
-import network.datamodel.CommunicationConstants;
-import network.datamodel.CommunicationDataModel;
-import network.datamodel.FileDataModel;
-import network.datamodel.FileObjectModel;
+import network.datamodel.*;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
+import scheduler.FileSystemScheduler;
 import usertool.Constants;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class Worker extends BasicWatcher {
     private String serverId;
     private String status;
     private String name;
+    private String myIp;
     private WorkerSender workerSender;
     private WorkerReceiver workerReceiver;
+    private FileSystemScheduler fileSystemScheduler;
     private LinkedList<CommunicationDataModel> comDataList;
     private LinkedList<Object> communicationSendQueue;
     private LinkedList<Object> fileSystemObjectQueue;
+    private Hashtable<String, FileStorageLocalDataModel> fileStorageInfo;
     private WorkerThread worker;
     private Thread workerThread;
 
     public Worker(String hostPort, String serverId, int sessionTimeOut,
-                  WorkerSender workerSender, WorkerReceiver workerReceiver) {
+                  WorkerSender workerSender, WorkerReceiver workerReceiver) throws UnknownHostException {
         super(hostPort, sessionTimeOut);
         Random random = new Random();
         this.serverId = serverId != null ? serverId : String.valueOf(random.nextInt());
@@ -41,6 +39,10 @@ public class Worker extends BasicWatcher {
         this.workerReceiver = workerReceiver;
         fileSystemObjectQueue = workerReceiver.objectQueue;
         worker = new WorkerThread();
+        fileSystemScheduler = new FileSystemScheduler(hostPort, sessionTimeOut,
+                    workerSender, workerReceiver, Constants.RANDOM.getValue());
+        myIp = InetAddress.getLocalHost().getHostAddress();
+        fileStorageInfo = new Hashtable<String, FileStorageLocalDataModel>();
     }
 
     public boolean initWorker() {
@@ -97,12 +99,6 @@ public class Worker extends BasicWatcher {
     private class WorkerThread implements Runnable {
         public void run() {
             long sleepInterval = Long.parseLong(Constants.SLEEP_INTERVAL.getValue());
-            String selfIp = "";
-            try {
-                selfIp = InetAddress.getLocalHost().getHostAddress();
-            } catch (UnknownHostException exception) {
-                // not sure what to do here
-            }
             CommunicationDataModel comData = null;
             while (true) {
                 synchronized (comDataList) { // ???????????????/*/*/*/*/**/*/*/*/*/
@@ -144,12 +140,6 @@ public class Worker extends BasicWatcher {
     private class WorkerFileSystemThread implements Runnable {
         public void run() {
             long sleepInterval = Long.parseLong(Constants.SLEEP_INTERVAL.getValue());
-            String selfIp = "";
-            try {
-                selfIp = InetAddress.getLocalHost().getHostAddress();
-            } catch (UnknownHostException exception) {
-                // not sure what to do here
-            }
             FileObjectModel fileSystemData = null;
             while (true) {
                 synchronized (fileSystemObjectQueue) { // ???????????????/*/*/*/*/**/*/*/*/*/
@@ -167,19 +157,34 @@ public class Worker extends BasicWatcher {
                 }
                 if (fileSystemData != null) {
                     if (fileSystemData.getActionType().equals(CommunicationConstants.PUT_PRIMARY_REPLICA.getValue())) {
-                        for (int i = 0; i < 2; i++) {
-                            // TODO: some what get the two other replica ips
-                            String replicaIp = "Not yet done";
+                        ArrayList<String> replicaIps = fileSystemScheduler.scheduleFile(0L,
+                                Integer.parseInt(Constants.REPLICATION_NUM.getValue()));
+                        for (String replicaIp : replicaIps) {
                             FileDataModel addReplicaTask = new FileDataModel(
                                     replicaIp,
                                     Integer.parseInt(Constants.FILE_RECEIVE_PORT.getValue()),
                                     fileSystemData.getFilePath()
                             );
+                            workerSender.addFileTask(addReplicaTask);
                         }
+                        replicaIps.add(myIp);
+                        FileStorageLocalDataModel fileStorageLocalDataModel = new FileStorageLocalDataModel(
+                                fileSystemData.getFilePath(),
+                                myIp,
+                                0L,
+                                true,
+                                new HashSet<String>(replicaIps)
+                        );
+
+                        /**
+                         * We have one write and maybe multiple reads
+                         * do we need lock????
+                         * */
+                        fileStorageInfo.put(fileSystemData.getFilePath(), fileStorageLocalDataModel);
                         // TODO: get masterIp here
                         String masterIp = "";
                         CommunicationDataModel ackToMaster = new CommunicationDataModel(
-                                selfIp, masterIp, fileSystemData.getSenderIp(),
+                                myIp, masterIp, fileSystemData.getSenderIp(),
                                 Constants.ADD_FILE_ACK.getValue(),
                                 fileSystemData.getFilePath(),
                                 fileSystemData.getFilePath(),

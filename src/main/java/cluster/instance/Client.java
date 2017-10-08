@@ -127,7 +127,6 @@ public class Client extends BasicWatcher {
         }
         // if we fail to get master, mission filed
         if (masterInfo == null) return false;
-        // TODO: init putRequest
         fileSize = FileSystemUtil.getFileSize(path);
         if (fileSize < 0) {
             // get file size failed

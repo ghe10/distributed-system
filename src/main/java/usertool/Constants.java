@@ -35,7 +35,13 @@ public enum Constants {
     WORKER_PATH("/workers"),
     TASK_PATH("/task"),
     ASSIGN_PATH("/assign"),
-    STATUS_PATH("/status");
+    STATUS_PATH("/status"),
+
+    /*FS scheduler modes*/
+    RANDOM("random"),
+
+    REPLICATION_NUM("2");
+
 
 
 
