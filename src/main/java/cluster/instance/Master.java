@@ -6,6 +6,7 @@ import org.apache.zookeeper.data.Stat;
 import org.apache.zookeeper.AsyncCallback.StringCallback;
 import usertool.Constants;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.LinkedList;
@@ -13,19 +14,21 @@ import java.util.Random;
 
 import static org.apache.zookeeper.ZooDefs.Ids.OPEN_ACL_UNSAFE;
 
-public class Master extends BasicWatcher{
+public class Master extends BasicWatcher {
 
     private boolean isLeader;
     private String serverId;
     private LinkedList<CommunicationDataModel> comDataList;
     private LinkedList<Object> communicationSendQueue;
 
-    public Master(String hostPort, int sessionTimeOut, LinkedList<Object> communicationSendQueue) {
+    public Master(String hostPort, int sessionTimeOut, LinkedList<Object> communicationSendQueue)
+            throws IOException, InterruptedException {
         super(hostPort, sessionTimeOut);
         Random random = new Random();
         serverId = String.valueOf(random.nextInt());
         comDataList = new LinkedList<CommunicationDataModel>();
         this.communicationSendQueue = communicationSendQueue;
+        startZooKeeper(this);
     }
 
     public void runForMaster() {

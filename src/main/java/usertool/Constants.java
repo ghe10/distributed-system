@@ -27,6 +27,8 @@ public enum Constants {
     REQUEST_FILE("request_file"),
     ADD_FILE_ACK("add_file_ack"),
 
+    PUT_PRIMARY_REPLICA("put_primary_replica"),
+    SET_PRIMARY_REPLICA("set_primary_replica"),
     PUT_REFUSED_IP("refused"),
 
     FS_ROOT_PATH("./"),

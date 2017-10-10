@@ -1,6 +1,8 @@
 package network.datamodel;
 
 import java.io.File;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.HashSet;
 
 public class FileStorageLocalDataModel {
@@ -31,13 +33,19 @@ public class FileStorageLocalDataModel {
         return fileSize;
     }
 
-    public boolean isMainReplica() {
-        return isMainReplica;
+    public boolean isMainReplica(String myIp) {
+        return myIp.equals(mainReplicaIp);
     }
 
     /* The none main replicas should update mainReplica according to some info from master */
-    public void setMainReplica() {
-        isMainReplica = true;
+    public void setMainReplica(String mainReplicaIp, String myIp) {
+        // bad design actually
+        this.mainReplicaIp = mainReplicaIp;
+        if (mainReplicaIp.equals(myIp)) {
+            isMainReplica = true;
+        } else {
+            isMainReplica = false;
+        }
     }
 
     public HashSet<String> getReplicaIps() {

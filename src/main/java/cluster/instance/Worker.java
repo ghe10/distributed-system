@@ -9,11 +9,19 @@ import org.apache.zookeeper.data.Stat;
 import scheduler.FileSystemScheduler;
 import usertool.Constants;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
 
+
+/**
+ * Short :
+ * (1) watcher function for replication
+ * (2) inform the new replica about the storage status of this file
+ * (3) inform master about the new replica storage statue
+ */
 public class Worker extends BasicWatcher {
     private String serverId;
     private String status;
@@ -22,7 +30,7 @@ public class Worker extends BasicWatcher {
     private WorkerSender workerSender;
     private WorkerReceiver workerReceiver;
     private FileSystemScheduler fileSystemScheduler;
-    private LinkedList<CommunicationDataModel> comDataList;
+    private LinkedList<CommunicationDataModel> comDataQueue;
     private LinkedList<Object> communicationSendQueue;
     private LinkedList<Object> fileSystemObjectQueue;
     private Hashtable<String, FileStorageLocalDataModel> fileStorageInfo;
@@ -43,11 +51,13 @@ public class Worker extends BasicWatcher {
                     workerSender, workerReceiver, Constants.RANDOM.getValue());
         myIp = InetAddress.getLocalHost().getHostAddress();
         fileStorageInfo = new Hashtable<String, FileStorageLocalDataModel>();
+        comDataQueue = new LinkedList<CommunicationDataModel>();
+        communicationSendQueue = workerSender.getCommunicationQueue();
     }
 
     public boolean initWorker() {
         try {
-            startZooKeeper();
+            startZooKeeper(this);
             register();
             workerThread = new Thread(worker);
             workerThread.start();
@@ -96,13 +106,60 @@ public class Worker extends BasicWatcher {
         updateStatus(status);
     }
 
+    private void deleteFile(String fileName) {
+        if (fileStorageInfo.containsKey(fileName)) {
+            FileStorageLocalDataModel storageInfo = fileStorageInfo.get(fileName);
+            File file = new File(String.format("%s%s", Constants.FS_ROOT_PATH.getValue(), fileName));
+            file.delete();
+            if (storageInfo.isMainReplica(myIp)) {
+                for (String replicaIp : storageInfo.getReplicaIps()) {
+                    if (replicaIp.equals(myIp)) {
+                        continue;
+                    }
+                    CommunicationDataModel comData = new CommunicationDataModel(
+                            myIp, replicaIp,
+                            CommunicationConstants.DELETE.getValue(),
+                            fileName,
+                            fileName,
+                            Integer.parseInt(Constants.CLIENT_COMMUNICATION_PORT.getValue())
+                    );
+                    synchronized (communicationSendQueue) {
+                        communicationSendQueue.add(comData);
+                    }
+                }
+            }
+            synchronized (fileStorageInfo) {
+                fileStorageInfo.remove(fileName);
+            }
+        }
+    }
+
+    private HashSet<String> addReplica(HashSet<String> existingReplicaIps, String filePath, long fileSize) {
+        int replicaGap =  Integer.parseInt(Constants.REPLICATION_NUM.getValue()) + 1 - existingReplicaIps.size();
+        if (replicaGap == 0) {
+            return existingReplicaIps;
+        }
+        ArrayList<String> replicaIps = fileSystemScheduler.scheduleFile(fileSize,
+                existingReplicaIps, replicaGap);
+        for (String replicaIp : replicaIps) {
+            FileDataModel addReplicaTask = new FileDataModel(
+                    replicaIp,
+                    Integer.parseInt(Constants.FILE_RECEIVE_PORT.getValue()),
+                    filePath
+            );
+            workerSender.addFileTask(addReplicaTask);
+        }
+        replicaIps.addAll(existingReplicaIps);
+        return new HashSet<String>(replicaIps);
+    }
+
     private class WorkerThread implements Runnable {
         public void run() {
             long sleepInterval = Long.parseLong(Constants.SLEEP_INTERVAL.getValue());
             CommunicationDataModel comData = null;
             while (true) {
-                synchronized (comDataList) { // ???????????????/*/*/*/*/**/*/*/*/*/
-                    if (comDataList.isEmpty()) {
+                synchronized (comDataQueue) { // ???????????????/*/*/*/*/**/*/*/*/*/
+                    if (comDataQueue.isEmpty()) {
                         comData = null;
                         try {
                             Thread.sleep(sleepInterval);
@@ -110,8 +167,8 @@ public class Worker extends BasicWatcher {
                             // nothing to do
                         }
                     } else {
-                        comData = comDataList.getFirst();
-                        comDataList.removeFirst();
+                        comData = comDataQueue.getFirst();
+                        comDataQueue.removeFirst();
                     }
                 }
                 if (comData != null) {
@@ -125,10 +182,47 @@ public class Worker extends BasicWatcher {
                         workerSender.addFileTask(fileDataModel);
                     } else if (comData.getAction().equals(CommunicationConstants.DELETE.getValue())) {
                         // TODO: delete the file
-                    } else if (comData.getAction().equals(CommunicationConstants.ADD_REPLICA.getValue())) {
-                        // TODO: add replica
-                    } else if (comData.getAction().equals(CommunicationConstants.ADD_REPLICAS.getValue())) {
-                        // TODO: add two replicas
+                        deleteFile(comData.getSourceFile());
+                    } else if (comData.getAction().equals(CommunicationConstants.GET_FILE.getValue())) {
+                        FileDataModel fileDataModel = new FileDataModel(
+                                comData.getActionDestinationIp(),
+                                Integer.parseInt(Constants.FILE_RECEIVE_PORT.getValue()),
+                                comData.getSourceFile()
+                        );
+                        workerSender.addFileTask(fileDataModel);
+                    } else if (comData.getAction().equals(Constants.SET_PRIMARY_REPLICA.getValue())) {
+                        // set primary, this results in add replica
+                        FileStorageLocalDataModel storageInfo = null;
+                        synchronized (fileStorageInfo) {
+                            if (!fileStorageInfo.containsKey(comData.getSourceFile())) {
+                                // this file might be deleted already
+                                continue;
+                            }
+                            storageInfo = fileStorageInfo.get(comData.getSourceFile());
+                            storageInfo.setMainReplica(comData.getActionDestinationIp(), myIp);
+                        }
+                        if (storageInfo != null && storageInfo.isMainReplica(myIp)) {
+                            for (String replicaIp : storageInfo.getReplicaIps()) {
+                                if (replicaIp.equals(myIp)) {
+                                    continue;
+                                }
+                                CommunicationDataModel comDataToSend = new CommunicationDataModel(
+                                        myIp, replicaIp,
+                                        myIp,
+                                        Constants.SET_PRIMARY_REPLICA.getValue(),
+                                        comData.getSourceFile(),
+                                        comData.getTargetFile(),
+                                        Integer.parseInt(Constants.CLIENT_COMMUNICATION_PORT.getValue())
+                                );
+                                synchronized (communicationSendQueue) {
+                                    communicationSendQueue.add(comDataToSend);
+                                }
+                            }
+                            // replication
+                            // if main replica is dead, replication starts here, else replication starts at watcher call
+                            // back
+                            addReplica(storageInfo.getReplicaIps(), comData.getSourceFile(), comData.getFileSize());
+                        }
                     } else {
                         // TODO: I don't know...
                     }
@@ -156,8 +250,8 @@ public class Worker extends BasicWatcher {
                     }
                 }
                 if (fileSystemData != null) {
-                    if (fileSystemData.getActionType().equals(CommunicationConstants.PUT_PRIMARY_REPLICA.getValue())) {
-                        ArrayList<String> replicaIps = fileSystemScheduler.scheduleFile(0L,
+                    if (fileSystemData.getActionType().equals(Constants.PUT_PRIMARY_REPLICA.getValue())) {
+                        ArrayList<String> replicaIps = fileSystemScheduler.scheduleFile(0L, null,
                                 Integer.parseInt(Constants.REPLICATION_NUM.getValue()));
                         for (String replicaIp : replicaIps) {
                             FileDataModel addReplicaTask = new FileDataModel(
@@ -190,8 +284,8 @@ public class Worker extends BasicWatcher {
                                 fileSystemData.getFilePath(),
                                 Integer.parseInt(Constants.CLIENT_COMMUNICATION_PORT.getValue())
                         );
-                        synchronized (comDataList) {
-                            comDataList.add(ackToMaster);
+                        synchronized (comDataQueue) {
+                            comDataQueue.add(ackToMaster);
                         }
                     }
                 }

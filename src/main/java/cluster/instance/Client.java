@@ -24,7 +24,7 @@ public class Client extends BasicWatcher {
     public boolean initClient() {
         int listenPort = Integer.parseInt(Constants.CLIENT_COMMUNICATION_PORT.getValue());
         try {
-            startZooKeeper();
+            startZooKeeper(this);
             tcpReceiveHelper = new TcpReceiveHelper(listenPort);
             return true;
         } catch(InterruptedException exception) {

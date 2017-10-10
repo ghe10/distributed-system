@@ -40,6 +40,8 @@ package cluster.instance;
  * 2. master told replica to send file
  * 3. we can use a while to check if we got the file
  * Here if we do some work, we may need suspend and resume.....
+ *
+ * get and delete happens in com
  */
 public class ReadMe {
 

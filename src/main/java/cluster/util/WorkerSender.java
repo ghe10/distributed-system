@@ -38,6 +38,10 @@ public class WorkerSender {
         tcpFileSendHelper.addFileTask(fileDataModel);
     }
 
+    public LinkedList<Object> getCommunicationQueue() {
+        return communicationHelper.getObjectQueue();
+    }
+
     public boolean shutDown() {
         tcpFileSendHelper.shutDown();
         tcpObjectSendHelper.shutDown();

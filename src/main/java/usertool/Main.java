@@ -10,6 +10,7 @@ import network.datamodel.FileDataModel;
 import network.datamodel.FileObjectModel;
 import org.kohsuke.args4j.Option;
 
+import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.Scanner;
@@ -38,7 +39,7 @@ public class Main {
     private static WorkerReceiver workerReceiver = null;
     private static WorkerSender workerSender = null;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, InterruptedException {
         Thread thread = null;
         Server server = null;
         Worker worker = null;

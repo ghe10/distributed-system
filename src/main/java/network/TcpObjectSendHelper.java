@@ -20,6 +20,10 @@ public class TcpObjectSendHelper extends TcpSendHelper implements Runnable {
         this.shutDown = true;
     }
 
+    public LinkedList<Object> getObjectQueue() {
+        return objectQueue;
+    }
+
     public void run() {
         while (!shutDown) {
             try {

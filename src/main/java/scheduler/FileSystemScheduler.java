@@ -57,7 +57,7 @@ public class FileSystemScheduler extends BasicWatcher {
         }
     }
 
-    private String randomSchudule(HashSet<String> candidates) {
+    private String randomSchedule(HashSet<String> candidates) {
         Iterator<String> iterator = candidates.iterator();
         int size = candidates.size();
         int index = random.nextInt() % size;
@@ -67,8 +67,11 @@ public class FileSystemScheduler extends BasicWatcher {
         return iterator.next();
     }
 
-    public ArrayList<String> scheduleFile(long fileSize, int num) {
+    public ArrayList<String> scheduleFile(long fileSize, HashSet<String> existingReplicaIps, int num) {
         HashSet<String> workerIps = getWorkerIp();
+        if (existingReplicaIps != null) {
+            workerIps.removeAll(existingReplicaIps);
+        }
         // we should avoid add self as a new replica
         workerIps.remove(myIp);
         ArrayList<String> replicaIps = new ArrayList<String>();
@@ -78,7 +81,7 @@ public class FileSystemScheduler extends BasicWatcher {
         } else if (mode.equals(Constants.RANDOM.getValue())) {
             // random scheduling
             for (int i = 0; i < num; i++) {
-                replicaIp = randomSchudule(workerIps);
+                replicaIp = randomSchedule(workerIps);
                 workerIps.remove(replicaIp);
                 replicaIps.add(replicaIp);
             }

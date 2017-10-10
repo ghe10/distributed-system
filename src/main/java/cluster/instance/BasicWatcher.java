@@ -20,9 +20,13 @@ public class BasicWatcher implements Watcher {
     }
 
 
-    protected void startZooKeeper() throws IOException, InterruptedException {
+    protected void startZooKeeper(Watcher watcher) throws IOException, InterruptedException {
         if (!isStarted()) {
-            zooKeeper = new ZooKeeper(hostPort, sessionTimeOut, this);
+            if (watcher == null) {
+                zooKeeper = new ZooKeeper(hostPort, sessionTimeOut, this);
+            } else {
+                zooKeeper = new ZooKeeper(hostPort, sessionTimeOut, watcher);
+            }
         }
     }
 
