@@ -8,6 +8,7 @@ public enum CommunicationConstants {
     SEND("send"),
     GET_FILE("get_file"), // in com data
     DELETE("delete"),
+    DELETE_SUCCESS("delete_success"),
 
     // the following part are for info
     NO_INFO("no_info"),

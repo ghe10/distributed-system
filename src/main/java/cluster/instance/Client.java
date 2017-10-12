@@ -142,12 +142,46 @@ public class Client extends BasicWatcher {
         tcpSendHelper = new TcpSendHelper(workerFileReceivePort, primaryReplicaInfo.getSenderIp());
         tcpSendHelper.sendFile(path);
         // use a constant to tell we are adding main replica, other replicas should by added by main replica
-        putFileObjectModel = new FileObjectModel(path, CommunicationConstants.PUT_PRIMARY_REPLICA.getValue(),
+        putFileObjectModel = new FileObjectModel(path, Constants.PUT_PRIMARY_REPLICA.getValue(),
                 primaryReplicaInfo.getActionDestinationIp(), myIp, Constants.FILE_OBJECT_RECEIVE_PORT.getValue());
         tcpSendHelper.sendObject(putFileObjectModel);
         // Next we should try to receive
         putResult = (CommunicationDataModel) tcpReceiveHelper.receive(putTimeOut);
         if (putResult == null) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean deleteFile(String fileName) throws InterruptedException, UnknownHostException {
+        String myIp = InetAddress.getLocalHost().getHostAddress();
+        NodeInfoModel masterInfo = null;
+        CommunicationDataModel primaryReplicaInfo = null;
+        CommunicationDataModel deleteRequestInfo = null;
+        CommunicationDataModel deleteResult = null;
+        int retry = Integer.parseInt(Constants.GET_MASTER_RETRY.getValue());
+        int masterComReceivePort = Integer.parseInt(Constants.MASTER_COMMUNICATION_PORT.getValue());
+        int workerCOmReceivePoty = Integer.parseInt(Constants.CLIENT_COMMUNICATION_PORT.getValue());
+        long sleepInterval = Long.parseLong(Constants.SLEEP_INTERVAL.getValue());
+        for (; retry > 0; retry--) {
+            masterInfo = getMasterInfo();
+            if (masterInfo != null) {
+                break;
+            }
+            Thread.sleep(sleepInterval);
+        }
+        deleteRequestInfo = new CommunicationDataModel(myIp, masterInfo.getIp(),
+                Constants.ADD_FILE.getValue(), fileName, fileName, masterComReceivePort);
+        primaryReplicaInfo = sendRequest(masterInfo.getIp(), deleteRequestInfo);
+        if (primaryReplicaInfo == null || primaryReplicaInfo.getMainReplicaIp().equals("")) {
+            System.out.println("****** Delete failed, file primary replica info not found or timeout *******");
+            return false;
+        }
+        // next we send the delete info to our main replica and let it delete
+        deleteRequestInfo = new CommunicationDataModel(myIp, primaryReplicaInfo.getMainReplicaIp(),
+                CommunicationConstants.DELETE.getValue(), fileName, fileName, workerCOmReceivePoty);
+        deleteResult = sendRequest(primaryReplicaInfo.getMainReplicaIp(), deleteRequestInfo);
+        if (deleteResult == null || ! deleteResult.getAction().equals(CommunicationConstants.DELETE_SUCCESS)) {
             return false;
         }
         return true;
