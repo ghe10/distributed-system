@@ -7,45 +7,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4ea994af-e087-40ba-b53b-1e48330717e9" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/cluster/instance/AdminClient.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/cluster/instance/BasicWatcher.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/cluster/instance/Client.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/cluster/instance/Master$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/cluster/instance/Master$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/cluster/instance/Master$MasterThread.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/cluster/instance/Master.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/cluster/instance/ReadMe.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/cluster/instance/Worker$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/cluster/instance/Worker$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/cluster/instance/Worker$3.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/cluster/instance/Worker$WorkerFileSystemThread.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/cluster/instance/Worker$WorkerThread.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/cluster/instance/Worker.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/cluster/server/Server.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/cluster/server/ZooKeeperServer.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/cluster/util/FileSystemUtil.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/cluster/util/MasterUtil.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/cluster/util/WorkerInstanceModel.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/cluster/util/WorkerReceiver.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/cluster/util/WorkerSender.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/network/SerializeUtil.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/network/TcpFileReceiveHelper.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/network/TcpFileSendHelper.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/network/TcpObjectReceiveHelper.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/network/TcpObjectSendHelper.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/network/TcpReceiveHelper.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/network/TcpSendHelper.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/network/datamodel/BasicModel.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/network/datamodel/CommunicationConstants.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/network/datamodel/CommunicationDataModel.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/network/datamodel/FileDataModel.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/network/datamodel/FileObjectModel.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/network/datamodel/NodeInfoModel.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/usertool/Constants.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/usertool/Main.class" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/cluster/instance/Worker.java" afterPath="$PROJECT_DIR$/src/main/java/cluster/instance/Worker.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/network/datamodel/CommunicationConstants.java" afterPath="$PROJECT_DIR$/src/main/java/network/datamodel/CommunicationConstants.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/cluster/instance/ReadMe.java" afterPath="$PROJECT_DIR$/src/main/java/cluster/instance/ReadMe.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -58,10 +20,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="Worker.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Worker.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/cluster/instance/Worker.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1941">
+            <state relative-caret-position="-1779">
               <caret line="136" column="89" lean-forward="false" selection-start-line="136" selection-start-column="89" selection-end-line="136" selection-end-column="89" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -120,11 +82,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ReadMe.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="ReadMe.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/cluster/instance/ReadMe.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="936">
-              <caret line="52" column="60" lean-forward="false" selection-start-line="52" selection-start-column="60" selection-end-line="52" selection-end-column="60" />
+            <state relative-caret-position="723">
+              <caret line="56" column="12" lean-forward="false" selection-start-line="56" selection-start-column="12" selection-end-line="56" selection-end-column="12" />
               <folding />
             </state>
           </provider>
@@ -266,11 +228,11 @@
         <option value="$PROJECT_DIR$/src/main/java/usertool/Main.java" />
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/src/main/java/scheduler/FileSystemScheduler.java" />
-        <option value="$PROJECT_DIR$/src/main/java/cluster/instance/ReadMe.java" />
         <option value="$PROJECT_DIR$/src/main/java/cluster/instance/Master.java" />
         <option value="$PROJECT_DIR$/src/main/java/cluster/instance/Client.java" />
         <option value="$PROJECT_DIR$/src/main/java/network/datamodel/CommunicationConstants.java" />
         <option value="$PROJECT_DIR$/src/main/java/cluster/instance/Worker.java" />
+        <option value="$PROJECT_DIR$/src/main/java/cluster/instance/ReadMe.java" />
       </list>
     </option>
   </component>
@@ -1012,14 +974,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/cluster/instance/ReadMe.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="936">
-          <caret line="52" column="60" lean-forward="false" selection-start-line="52" selection-start-column="60" selection-end-line="52" selection-end-column="60" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/cluster/instance/Master.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="108">
@@ -1046,11 +1000,19 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/cluster/instance/Worker.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1941">
+        <state relative-caret-position="-1779">
           <caret line="136" column="89" lean-forward="false" selection-start-line="136" selection-start-column="89" selection-end-line="136" selection-end-column="89" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/cluster/instance/ReadMe.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="723">
+          <caret line="56" column="12" lean-forward="false" selection-start-line="56" selection-start-column="12" selection-end-line="56" selection-end-column="12" />
+          <folding />
         </state>
       </provider>
     </entry>

@@ -49,10 +49,13 @@ package cluster.instance;
  * for all replica info
  * Actually we don't need step 2.
  *
- * Task to do for fs:
- * 1. add tracking function in worker and master for failure
- * 2. add tracking function for fileSystem info queue
- * 3. simplify the provided interface for get among storage nodes
+ *  Task to do for fs:
+ *  1. add tracking function in worker and master for failure
+ *  2. add tracking function for fileSystem info queue
+ *  3. simplify the provided interface for get among storage nodes
+ *
+ *2017.10.12
+ *  These are done
  *
  * ******* Master only servers for ack ips, other actions like command send should be done be client *******
  *
