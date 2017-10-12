@@ -42,6 +42,13 @@ package cluster.instance;
  * Here if we do some work, we may need suspend and resume.....
  *
  * get and delete happens in com
+ *
+ * 2017.10.11
+ * Add ack for replication and add file
+ * Change communication sequence: 1. send file 2. send info from file send queue 3. send info from comDataQueue
+ * for all replica info
+ * Actually we don't need step 2.
+ *
  */
 public class ReadMe {
 
