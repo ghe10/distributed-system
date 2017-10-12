@@ -7,7 +7,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4ea994af-e087-40ba-b53b-1e48330717e9" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/cluster/instance/ReadMe.java" afterPath="$PROJECT_DIR$/src/main/java/cluster/instance/ReadMe.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/network/datamodel/CommunicationConstants.java" afterPath="$PROJECT_DIR$/src/main/java/network/datamodel/CommunicationConstants.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/usertool/Constants.java" afterPath="$PROJECT_DIR$/src/main/java/usertool/Constants.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -52,11 +53,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="CommunicationConstants.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="CommunicationConstants.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/network/datamodel/CommunicationConstants.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="198">
-              <caret line="11" column="35" lean-forward="false" selection-start-line="11" selection-start-column="35" selection-end-line="11" selection-end-column="35" />
+            <state relative-caret-position="162">
+              <caret line="9" column="47" lean-forward="false" selection-start-line="9" selection-start-column="47" selection-end-line="9" selection-end-column="47" />
               <folding />
             </state>
           </provider>
@@ -82,11 +83,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ReadMe.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ReadMe.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/cluster/instance/ReadMe.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="723">
-              <caret line="56" column="12" lean-forward="false" selection-start-line="56" selection-start-column="12" selection-end-line="56" selection-end-column="12" />
+            <state relative-caret-position="579">
+              <caret line="48" column="23" lean-forward="true" selection-start-line="48" selection-start-column="23" selection-end-line="48" selection-end-column="23" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Constants.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/usertool/Constants.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="126">
+              <caret line="7" column="16" lean-forward="false" selection-start-line="7" selection-start-column="16" selection-end-line="7" selection-end-column="16" />
               <folding />
             </state>
           </provider>
@@ -98,19 +109,6 @@
             <state relative-caret-position="324">
               <caret line="21" column="8" lean-forward="false" selection-start-line="21" selection-start-column="8" selection-end-line="41" selection-end-column="9" />
               <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TcpObjectSendHelper.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/network/TcpObjectSendHelper.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="108">
-              <caret line="10" column="60" lean-forward="false" selection-start-line="10" selection-start-column="60" selection-end-line="10" selection-end-column="60" />
-              <folding>
-                <element signature="e#836#837#0" expanded="true" />
-                <element signature="e#870#871#0" expanded="true" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -215,7 +213,6 @@
         <option value="$PROJECT_DIR$/src/main/java/cluster/util/WorkerReceiver.java" />
         <option value="$PROJECT_DIR$/src/main/java/network/datamodel/FIleStorageDataModel.java" />
         <option value="$PROJECT_DIR$/src/main/java/cluster/instance/BasicWatcher.java" />
-        <option value="$PROJECT_DIR$/src/main/java/usertool/Constants.java" />
         <option value="$PROJECT_DIR$/src/main/java/network/datamodel/CommunicationDataModel.java" />
         <option value="$PROJECT_DIR$/src/main/java/network/datamodel/FileStorageLocalDataModel.java" />
         <option value="$PROJECT_DIR$/src/main/java/network/datamodel/FileDataModel.java" />
@@ -230,9 +227,10 @@
         <option value="$PROJECT_DIR$/src/main/java/scheduler/FileSystemScheduler.java" />
         <option value="$PROJECT_DIR$/src/main/java/cluster/instance/Master.java" />
         <option value="$PROJECT_DIR$/src/main/java/cluster/instance/Client.java" />
-        <option value="$PROJECT_DIR$/src/main/java/network/datamodel/CommunicationConstants.java" />
         <option value="$PROJECT_DIR$/src/main/java/cluster/instance/Worker.java" />
         <option value="$PROJECT_DIR$/src/main/java/cluster/instance/ReadMe.java" />
+        <option value="$PROJECT_DIR$/src/main/java/usertool/Constants.java" />
+        <option value="$PROJECT_DIR$/src/main/java/network/datamodel/CommunicationConstants.java" />
       </list>
     </option>
   </component>
@@ -903,14 +901,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/usertool/Constants.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="15" column="29" lean-forward="false" selection-start-line="15" selection-start-column="4" selection-end-line="15" selection-end-column="29" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/network/TcpReceiveHelper.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="126">
@@ -990,14 +980,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/network/datamodel/CommunicationConstants.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="198">
-          <caret line="11" column="35" lean-forward="false" selection-start-line="11" selection-start-column="35" selection-end-line="11" selection-end-column="35" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/cluster/instance/Worker.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-1779">
@@ -1010,8 +992,24 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/cluster/instance/ReadMe.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="723">
-          <caret line="56" column="12" lean-forward="false" selection-start-line="56" selection-start-column="12" selection-end-line="56" selection-end-column="12" />
+        <state relative-caret-position="579">
+          <caret line="48" column="23" lean-forward="true" selection-start-line="48" selection-start-column="23" selection-end-line="48" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/usertool/Constants.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="126">
+          <caret line="7" column="16" lean-forward="false" selection-start-line="7" selection-start-column="16" selection-end-line="7" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/network/datamodel/CommunicationConstants.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="162">
+          <caret line="9" column="47" lean-forward="false" selection-start-line="9" selection-start-column="47" selection-end-line="9" selection-end-column="47" />
           <folding />
         </state>
       </provider>

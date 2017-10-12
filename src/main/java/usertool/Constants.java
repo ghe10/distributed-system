@@ -1,5 +1,12 @@
 package usertool;
 
+/**
+ * This class contains the info about
+ * port,
+ * timeout,
+ * folder,
+ * some commands
+ */
 public enum Constants {
     SERVER_MODE("s"),
     WORKER_MODE("w"),

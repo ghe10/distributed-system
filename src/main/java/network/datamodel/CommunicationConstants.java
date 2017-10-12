@@ -1,9 +1,13 @@
 package network.datamodel;
 
 /**
- * This class specifies the communication format and commands
+ * This class specifies the
+ * communication format
+ * mode
+ * some action and result
  */
 public enum CommunicationConstants {
+    // TODO: re-balance this and Constants.java
     ACK("ack"),
     SEND("send"),
     GET_FILE("get_file"), // in com data
