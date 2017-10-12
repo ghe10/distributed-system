@@ -54,6 +54,8 @@ package cluster.instance;
  * 2. add tracking function for fileSystem info queue
  * 3. simplify the provided interface for get among storage nodes
  *
+ * ******* Master only servers for ack ips, other actions like command send should be done be client *******
+ *
  */
 public class ReadMe {
 

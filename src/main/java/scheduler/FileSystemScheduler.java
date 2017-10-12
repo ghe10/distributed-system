@@ -4,6 +4,7 @@ import cluster.instance.BasicWatcher;
 import cluster.instance.Worker;
 import cluster.util.WorkerReceiver;
 import cluster.util.WorkerSender;
+import network.datamodel.FileStorageLocalDataModel;
 import org.apache.zookeeper.KeeperException;
 import usertool.Constants;
 
@@ -13,31 +14,48 @@ import java.util.*;
 
 import static com.sun.org.apache.xml.internal.security.keys.keyresolver.KeyResolver.iterator;
 
+/**
+ * Why do we have a stupid interface for scheduler with port string and session timeout int......
+ */
+
 public class FileSystemScheduler extends BasicWatcher {
-    private WorkerSender workerSender;
-    private WorkerReceiver workerReceiver;
+    //private WorkerSender workerSender;
+    //private WorkerReceiver workerReceiver;
     private String mode;
     private Random random;
     private String myIp;
+    private Hashtable<String, FileStorageLocalDataModel> fileStorageInfo;
 
     public FileSystemScheduler(String hostPort, int sessionTimeOut,
                   WorkerSender workerSender, WorkerReceiver workerReceiver) throws UnknownHostException {
         super(hostPort, sessionTimeOut);
-        this.workerSender = workerSender;
-        this.workerReceiver = workerReceiver;
+        //this.workerSender = workerSender;
+        //this.workerReceiver = workerReceiver;
         this.mode = Constants.RANDOM.getValue();
         random = new Random();
         myIp = InetAddress.getLocalHost().getHostAddress();
+        fileStorageInfo = null;
     }
 
     public FileSystemScheduler(String hostPort, int sessionTimeOut, WorkerSender workerSender,
                                WorkerReceiver workerReceiver, String mode) throws UnknownHostException {
         super(hostPort, sessionTimeOut);
-        this.workerSender = workerSender;
-        this.workerReceiver = workerReceiver;
+        //this.workerSender = workerSender;
+        //this.workerReceiver = workerReceiver;
         this.mode = mode;
         random = new Random();
         myIp = InetAddress.getLocalHost().getHostAddress();
+        fileStorageInfo = null;
+    }
+
+    public FileSystemScheduler(String hostPort, int sessionTimeOut, String mode,
+                               Hashtable<String, FileStorageLocalDataModel> fileStorageInfo)
+            throws UnknownHostException {
+        super(hostPort, sessionTimeOut);
+        this.mode = mode;
+        random = new Random();
+        myIp = InetAddress.getLocalHost().getHostAddress();
+        this.fileStorageInfo = fileStorageInfo;
     }
 
     private HashSet<String> getWorkerIp() {
@@ -67,6 +85,15 @@ public class FileSystemScheduler extends BasicWatcher {
         return iterator.next();
     }
 
+    public String scheduleMainReplica(long fileSize) {
+        HashSet<String> workerIps = getWorkerIp();
+        workerIps.remove(myIp);
+        if (mode.equals(Constants.RANDOM.getValue())) {
+            return randomSchedule(workerIps);
+        }
+        return null;
+    }
+
     public ArrayList<String> scheduleFile(long fileSize, HashSet<String> existingReplicaIps, int num) {
         HashSet<String> workerIps = getWorkerIp();
         if (existingReplicaIps != null) {
@@ -89,6 +116,17 @@ public class FileSystemScheduler extends BasicWatcher {
         } else {
             return null;
         }
+    }
+
+    public String scheduleFileGet(String fileName) {
+        FileStorageLocalDataModel thisFileStorageInfo = fileStorageInfo.getOrDefault(fileName, null);
+        if (thisFileStorageInfo == null) {
+            return null;
+        }
+        if (mode.equals(Constants.RANDOM.getValue())) {
+            return randomSchedule(thisFileStorageInfo.getReplicaIps());
+        }
+        return null;
     }
 
 }

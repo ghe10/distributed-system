@@ -7,6 +7,7 @@ import network.datamodel.FileStorageLocalDataModel;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import org.apache.zookeeper.AsyncCallback.StringCallback;
+import scheduler.FileSystemScheduler;
 import usertool.Constants;
 
 import java.io.DataInputStream;
@@ -24,6 +25,7 @@ public class Master extends BasicWatcher {
 
     private boolean isLeader;
     private String serverId;
+    private FileSystemScheduler fileSystemScheduler;
     private LinkedList<CommunicationDataModel> masterCommunicationQueue; // this queue is not related to the one for worker
     private LinkedList<CommunicationDataModel> communicationSendQueue;
     private Hashtable<String, FileStorageLocalDataModel> fileStorageInfo; // store all the file data in memory
@@ -39,6 +41,12 @@ public class Master extends BasicWatcher {
         masterCommunicationQueue = new LinkedList<CommunicationDataModel>();
         this.communicationSendQueue = communicationSendQueue;
         this.fileStorageInfo = fileStorageInfo;
+        fileSystemScheduler = new FileSystemScheduler(
+                Constants.DEFAULT_HOST_PORT.getValue(),
+                Integer.parseInt(Constants.DEFAULT_SESSION_TIMEOUT.getValue()),
+                Constants.RANDOM.getValue(),
+                fileStorageInfo
+        );
         startZooKeeper(this);
     }
 
@@ -122,7 +130,7 @@ public class Master extends BasicWatcher {
                     if (action.equals(Constants.ADD_FILE.getValue())) {
                         // TODO: use some algorithm to find primary replica
                         // client will send to main replica, replication will be done by main replica
-                        String mainReplicaIp = "";
+                        String mainReplicaIp = fileSystemScheduler.scheduleMainReplica(comData.getFileSize());
                         CommunicationDataModel ack = new CommunicationDataModel(selfIp, comData.getSenderIp(),
                                 mainReplicaIp, Constants.ADD_FILE_ACK.getValue(), "", "",
                                 Integer.parseInt(Constants.CLIENT_COMMUNICATION_PORT.getValue())); // sth should be here
@@ -133,7 +141,7 @@ public class Master extends BasicWatcher {
                     } else if (action.equals(Constants.REQUEST_FILE.getValue())) {
                         // TODO: use some algorithm to choose the correct replica
                         // tell a chosen replica to send file to requester
-                        String chosenReplicaIp = "";
+                        String chosenReplicaIp = fileSystemScheduler.scheduleFileGet(comData.getSourceFile());
                         CommunicationDataModel ack = new CommunicationDataModel(selfIp, chosenReplicaIp,
                                 comData.getSenderIp(), Constants.ADD_FILE_ACK.getValue(), "", "",
                                 Integer.parseInt(Constants.CLIENT_COMMUNICATION_PORT.getValue())); // sth should be here
@@ -142,13 +150,35 @@ public class Master extends BasicWatcher {
                         }
 
                     } else if (action.equals(Constants.REMOVE_FILE.getValue())) {
-
+                        FileStorageLocalDataModel fileStorageLocalDataModel =
+                                fileStorageInfo.getOrDefault(comData.getSourceFile(), null);
+                        String mainReplicaIp = "";
+                        if (fileStorageLocalDataModel != null) {
+                            mainReplicaIp = fileStorageLocalDataModel.getMainReplicaIp();
+                        }
+                        CommunicationDataModel ack = new CommunicationDataModel(selfIp, mainReplicaIp,
+                                comData.getSenderIp(), Constants.ADD_FILE_ACK.getValue(), "", "",
+                                Integer.parseInt(Constants.CLIENT_COMMUNICATION_PORT.getValue())); // sth should be here
+                        synchronized (communicationSendQueue) {
+                            communicationSendQueue.add(ack);
+                        }
+                        synchronized (fileStorageInfo) {
+                            fileStorageInfo.remove(comData.getSourceFile());
+                        }
+                        // the delete operation is not yet done, the file will be deactivated when ack form main replica??
+                        // may be delete it now is better
                     } else {
                         System.out.println("*************** Incorrect input *****************");
                     }
                 }
             }
         }
+    }
+    private String getMainReplicaIp(String fileName) {
+        if (fileStorageInfo.containsKey(fileName)) {
+            return fileStorageInfo.get(fileName).getMainReplicaIp();
+        }
+        return null;
     }
 
     private void bootstrap() {
