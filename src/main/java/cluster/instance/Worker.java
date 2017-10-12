@@ -107,7 +107,12 @@ public class Worker extends BasicWatcher {
         updateStatus(status);
     }
 
-    private void deleteFile(String fileName) {
+    /**
+     * This function assumes that the delete request are from worker or client, not from master's own
+     * communication listening port
+     * */
+    private void deleteFile(String fileName, String ackTargetIp) {
+        CommunicationDataModel ack = null;
         if (fileStorageInfo.containsKey(fileName)) {
             FileStorageLocalDataModel storageInfo = fileStorageInfo.get(fileName);
             File file = new File(String.format("%s%s", Constants.FS_ROOT_PATH.getValue(), fileName));
@@ -128,9 +133,33 @@ public class Worker extends BasicWatcher {
                         communicationSendQueue.add(comData);
                     }
                 }
+                // send ack to the one who send the request
+                // note that we just guarantee that we successfully kill the main replica
+                ack = new CommunicationDataModel(
+                        myIp, ackTargetIp,
+                        CommunicationConstants.DELETE_SUCCESS.getValue(),
+                        fileName,
+                        fileName,
+                        Integer.parseInt(Constants.CLIENT_COMMUNICATION_PORT.getValue())
+                );
+                synchronized (communicationSendQueue) {
+                    communicationSendQueue.add(ack);
+                }
             }
             synchronized (fileStorageInfo) {
                 fileStorageInfo.remove(fileName);
+            }
+        } else {
+            // ack for delete failure
+            ack = new CommunicationDataModel(
+                    myIp, ackTargetIp,
+                    CommunicationConstants.DELETE_FAILED.getValue(),
+                    fileName,
+                    fileName,
+                    Integer.parseInt(Constants.CLIENT_COMMUNICATION_PORT.getValue())
+            );
+            synchronized (communicationSendQueue) {
+                communicationSendQueue.add(ack);
             }
         }
     }
@@ -216,7 +245,7 @@ public class Worker extends BasicWatcher {
                         );
                         workerSender.addFileTask(fileDataModel);
                     } else if (comData.getAction().equals(CommunicationConstants.DELETE.getValue())) {
-                        deleteFile(comData.getSourceFile());
+                        deleteFile(comData.getSourceFile(), comData.getSenderIp());
                     } else if (comData.getAction().equals(CommunicationConstants.GET_FILE.getValue())) {
                         FileDataModel fileDataModel = new FileDataModel(
                                 comData.getActionDestinationIp(),
