@@ -7,27 +7,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4ea994af-e087-40ba-b53b-1e48330717e9" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/cluster/instance/Client.class" afterPath="$PROJECT_DIR$/target/classes/cluster/instance/Client.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/cluster/instance/Master$1.class" afterPath="$PROJECT_DIR$/target/classes/cluster/instance/Master$1.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/cluster/instance/Master$2.class" afterPath="$PROJECT_DIR$/target/classes/cluster/instance/Master$2.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/cluster/instance/Master.class" afterPath="$PROJECT_DIR$/target/classes/cluster/instance/Master.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/cluster/instance/ReadMe.class" afterPath="$PROJECT_DIR$/target/classes/cluster/instance/ReadMe.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/cluster/instance/Worker$1.class" afterPath="$PROJECT_DIR$/target/classes/cluster/instance/Worker$1.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/cluster/instance/Worker$2.class" afterPath="$PROJECT_DIR$/target/classes/cluster/instance/Worker$2.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/cluster/instance/Worker$3.class" afterPath="$PROJECT_DIR$/target/classes/cluster/instance/Worker$3.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/cluster/instance/Worker.class" afterPath="$PROJECT_DIR$/target/classes/cluster/instance/Worker.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/cluster/util/WorkerReceiver.class" afterPath="$PROJECT_DIR$/target/classes/cluster/util/WorkerReceiver.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/cluster/util/WorkerSender.class" afterPath="$PROJECT_DIR$/target/classes/cluster/util/WorkerSender.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/network/TcpFileSendHelper.class" afterPath="$PROJECT_DIR$/target/classes/network/TcpFileSendHelper.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/network/TcpObjectSendHelper.class" afterPath="$PROJECT_DIR$/target/classes/network/TcpObjectSendHelper.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/network/TcpReceiveHelper.class" afterPath="$PROJECT_DIR$/target/classes/network/TcpReceiveHelper.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/network/datamodel/CommunicationConstants.class" afterPath="$PROJECT_DIR$/target/classes/network/datamodel/CommunicationConstants.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/network/datamodel/CommunicationDataModel.class" afterPath="$PROJECT_DIR$/target/classes/network/datamodel/CommunicationDataModel.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/network/datamodel/FileDataModel.class" afterPath="$PROJECT_DIR$/target/classes/network/datamodel/FileDataModel.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/network/datamodel/FileObjectModel.class" afterPath="$PROJECT_DIR$/target/classes/network/datamodel/FileObjectModel.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/usertool/Constants.class" afterPath="$PROJECT_DIR$/target/classes/usertool/Constants.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/usertool/Main.class" afterPath="$PROJECT_DIR$/target/classes/usertool/Main.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/cluster/instance/ReadMe.java" afterPath="$PROJECT_DIR$/src/main/java/cluster/instance/ReadMe.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
@@ -69,8 +48,8 @@
       <file leaf-file-name="ReadMe.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/cluster/instance/ReadMe.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="849">
-              <caret line="49" column="33" lean-forward="false" selection-start-line="49" selection-start-column="33" selection-end-line="49" selection-end-column="33" />
+            <state relative-caret-position="867">
+              <caret line="54" column="50" lean-forward="false" selection-start-line="54" selection-start-column="50" selection-end-line="54" selection-end-column="50" />
               <folding />
             </state>
           </provider>
@@ -1046,8 +1025,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/cluster/instance/ReadMe.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="849">
-          <caret line="49" column="33" lean-forward="false" selection-start-line="49" selection-start-column="33" selection-end-line="49" selection-end-column="33" />
+        <state relative-caret-position="867">
+          <caret line="54" column="50" lean-forward="false" selection-start-line="54" selection-start-column="50" selection-end-line="54" selection-end-column="50" />
           <folding />
         </state>
       </provider>
