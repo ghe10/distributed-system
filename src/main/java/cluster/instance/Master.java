@@ -1,14 +1,20 @@
 package cluster.instance;
 
+import network.SerializeUtil;
+import network.TcpReceiveHelper;
 import network.datamodel.CommunicationDataModel;
+import network.datamodel.FileStorageLocalDataModel;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import org.apache.zookeeper.AsyncCallback.StringCallback;
 import usertool.Constants;
 
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -18,16 +24,21 @@ public class Master extends BasicWatcher {
 
     private boolean isLeader;
     private String serverId;
-    private LinkedList<CommunicationDataModel> comDataList;
-    private LinkedList<Object> communicationSendQueue;
+    private LinkedList<CommunicationDataModel> masterCommunicationQueue; // this queue is not related to the one for worker
+    private LinkedList<CommunicationDataModel> communicationSendQueue;
+    private Hashtable<String, FileStorageLocalDataModel> fileStorageInfo; // store all the file data in memory
+    private Thread masterComListerThread;
+    private Thread masterThread;
 
-    public Master(String hostPort, int sessionTimeOut, LinkedList<Object> communicationSendQueue)
+    public Master(String hostPort, int sessionTimeOut, LinkedList<CommunicationDataModel> communicationSendQueue,
+                  Hashtable<String, FileStorageLocalDataModel> fileStorageInfo)
             throws IOException, InterruptedException {
         super(hostPort, sessionTimeOut);
         Random random = new Random();
         serverId = String.valueOf(random.nextInt());
-        comDataList = new LinkedList<CommunicationDataModel>();
+        masterCommunicationQueue = new LinkedList<CommunicationDataModel>();
         this.communicationSendQueue = communicationSendQueue;
+        this.fileStorageInfo = fileStorageInfo;
         startZooKeeper(this);
     }
 
@@ -49,6 +60,36 @@ public class Master extends BasicWatcher {
         }
     }
 
+    private class MasterListener extends TcpReceiveHelper {
+        public MasterListener(int port) {
+            super(port);
+        }
+
+        public void run() {
+            byte[] byteBuffer = new byte[1024];
+            while (!shutDown) {
+                try {
+                    Socket socket = serverSocket.accept();
+                    DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
+                    dataInputStream.read(byteBuffer);
+                    CommunicationDataModel comData = (CommunicationDataModel) SerializeUtil.deserialize(byteBuffer);
+                    synchronized (masterCommunicationQueue) {
+                        masterCommunicationQueue.add(comData);
+                    }
+                    dataInputStream.close();
+                    socket.close();
+                } catch (IOException exception) {
+                    exception.printStackTrace();
+                }
+            }
+            try {
+                serverSocket.close();
+            } catch (IOException exception) {
+                exception.printStackTrace();
+            }
+        }
+    }
+
     /* a queue should be in Master class for received user request*/
     private class MasterThread implements Runnable {
         // this thread should deal with client request from a queue
@@ -63,8 +104,8 @@ public class Master extends BasicWatcher {
             }
             CommunicationDataModel comData = null;
             while (true) {
-                synchronized (comDataList) { // ???????????????/*/*/*/*/**/*/*/*/*/
-                    if (comDataList.isEmpty()) {
+                synchronized (masterCommunicationQueue) { // ???????????????/*/*/*/*/**/*/*/*/*/
+                    if (masterCommunicationQueue.isEmpty()) {
                         comData = null;
                         try {
                             Thread.sleep(sleepInterval);
@@ -72,8 +113,8 @@ public class Master extends BasicWatcher {
                             // nothing to do
                         }
                     } else {
-                        comData = comDataList.getFirst();
-                        comDataList.removeFirst();
+                        comData = masterCommunicationQueue.getFirst();
+                        masterCommunicationQueue.removeFirst();
                     }
                 }
                 if (comData != null) {
@@ -116,6 +157,13 @@ public class Master extends BasicWatcher {
         createParent("/assign", new byte[0]);
         createParent("/tasks", new byte[0]);
         createParent("/status", new byte[0]);
+        int port = Integer.parseInt(Constants.MASTER_COMMUNICATION_PORT.getValue());
+        MasterListener listener = new MasterListener(port);
+        MasterThread thread = new MasterThread();
+        masterComListerThread = new Thread(listener);
+        masterThread = new Thread(thread);
+        masterComListerThread.start();
+        masterThread.start();
     }
 
     /**

@@ -31,26 +31,27 @@ public class Worker extends BasicWatcher {
     private WorkerReceiver workerReceiver;
     private FileSystemScheduler fileSystemScheduler;
     private LinkedList<CommunicationDataModel> comDataQueue;
-    private LinkedList<Object> communicationSendQueue;
+    private LinkedList<CommunicationDataModel> communicationSendQueue;
     private LinkedList<Object> fileSystemObjectQueue;
     private Hashtable<String, FileStorageLocalDataModel> fileStorageInfo;
     private WorkerThread worker;
     private Thread workerThread;
 
     public Worker(String hostPort, String serverId, int sessionTimeOut,
-                  WorkerSender workerSender, WorkerReceiver workerReceiver) throws UnknownHostException {
+                  WorkerSender workerSender, WorkerReceiver workerReceiver,
+                  Hashtable<String, FileStorageLocalDataModel> fileStorageInfo) throws UnknownHostException {
         super(hostPort, sessionTimeOut);
         Random random = new Random();
         this.serverId = serverId != null ? serverId : String.valueOf(random.nextInt());
         this.name = String.format("worker-%s", serverId);
         this.workerSender = workerSender;
         this.workerReceiver = workerReceiver;
+        this.fileStorageInfo = fileStorageInfo;
         fileSystemObjectQueue = workerReceiver.objectQueue;
         worker = new WorkerThread();
         fileSystemScheduler = new FileSystemScheduler(hostPort, sessionTimeOut,
                     workerSender, workerReceiver, Constants.RANDOM.getValue());
         myIp = InetAddress.getLocalHost().getHostAddress();
-        fileStorageInfo = new Hashtable<String, FileStorageLocalDataModel>();
         comDataQueue = new LinkedList<CommunicationDataModel>();
         communicationSendQueue = workerSender.getCommunicationQueue();
     }
@@ -136,21 +137,55 @@ public class Worker extends BasicWatcher {
 
     private HashSet<String> addReplica(HashSet<String> existingReplicaIps, String filePath, long fileSize) {
         int replicaGap =  Integer.parseInt(Constants.REPLICATION_NUM.getValue()) + 1 - existingReplicaIps.size();
+        String masterIp = "";
+
         if (replicaGap == 0) {
             return existingReplicaIps;
         }
         ArrayList<String> replicaIps = fileSystemScheduler.scheduleFile(fileSize,
                 existingReplicaIps, replicaGap);
         for (String replicaIp : replicaIps) {
+            CommunicationDataModel comDataToSend = new CommunicationDataModel(
+                    myIp, replicaIp,
+                    myIp,
+                    Constants.SET_PRIMARY_REPLICA.getValue(),
+                    filePath,
+                    filePath,
+                    Integer.parseInt(Constants.CLIENT_COMMUNICATION_PORT.getValue())
+            );
+            comDataToSend.addReplicaInfo(myIp, new HashSet<String>(replicaIps));
             FileDataModel addReplicaTask = new FileDataModel(
                     replicaIp,
                     Integer.parseInt(Constants.FILE_RECEIVE_PORT.getValue()),
-                    filePath
+                    filePath,
+                    comDataToSend
             );
             workerSender.addFileTask(addReplicaTask);
         }
+        // TODO: get master IP
+        // send ack to master about the info
         replicaIps.addAll(existingReplicaIps);
+        ackForReplicationChange(masterIp, filePath, new HashSet<String>(replicaIps));
         return new HashSet<String>(replicaIps);
+    }
+
+    /**
+     * This function sends ack for replication change to master for multiple reasons:
+     * 1. replication change
+     * 2. new file is added
+     * */
+    private void ackForReplicationChange(String masterIp, String filePath, HashSet<String> replicaIps) {
+        CommunicationDataModel comDataToSend = new CommunicationDataModel(
+                myIp, masterIp,
+                Constants.SET_PRIMARY_REPLICA.getValue(),
+                filePath,
+                filePath,
+                Integer.parseInt(Constants.CLIENT_COMMUNICATION_PORT.getValue())
+        );
+        comDataToSend.addReplicaInfo(myIp, replicaIps);
+        synchronized (communicationSendQueue) {
+            communicationSendQueue.add(comDataToSend);
+        }
     }
 
     private class WorkerThread implements Runnable {
@@ -181,7 +216,6 @@ public class Worker extends BasicWatcher {
                         );
                         workerSender.addFileTask(fileDataModel);
                     } else if (comData.getAction().equals(CommunicationConstants.DELETE.getValue())) {
-                        // TODO: delete the file
                         deleteFile(comData.getSourceFile());
                     } else if (comData.getAction().equals(CommunicationConstants.GET_FILE.getValue())) {
                         FileDataModel fileDataModel = new FileDataModel(
@@ -200,28 +234,12 @@ public class Worker extends BasicWatcher {
                             }
                             storageInfo = fileStorageInfo.get(comData.getSourceFile());
                             storageInfo.setMainReplica(comData.getActionDestinationIp(), myIp);
-                        }
-                        if (storageInfo != null && storageInfo.isMainReplica(myIp)) {
-                            for (String replicaIp : storageInfo.getReplicaIps()) {
-                                if (replicaIp.equals(myIp)) {
-                                    continue;
-                                }
-                                CommunicationDataModel comDataToSend = new CommunicationDataModel(
-                                        myIp, replicaIp,
-                                        myIp,
-                                        Constants.SET_PRIMARY_REPLICA.getValue(),
-                                        comData.getSourceFile(),
-                                        comData.getTargetFile(),
-                                        Integer.parseInt(Constants.CLIENT_COMMUNICATION_PORT.getValue())
-                                );
-                                synchronized (communicationSendQueue) {
-                                    communicationSendQueue.add(comDataToSend);
-                                }
+                            if (storageInfo.isMainReplica(myIp)) {
+                                HashSet<String> replicaIps = addReplica(storageInfo.getReplicaIps(),
+                                        comData.getSourceFile(), comData.getFileSize());
+                                storageInfo.setReplicas(replicaIps);
                             }
-                            // replication
-                            // if main replica is dead, replication starts here, else replication starts at watcher call
-                            // back
-                            addReplica(storageInfo.getReplicaIps(), comData.getSourceFile(), comData.getFileSize());
+                            fileStorageInfo.put(comData.getSourceFile(), storageInfo);
                         }
                     } else {
                         // TODO: I don't know...

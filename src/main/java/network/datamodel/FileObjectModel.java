@@ -1,7 +1,5 @@
 package network.datamodel;
 
-import org.apache.zookeeper.AsyncCallback;
-
 /**
  * This model is used to be transmitted in network
  */
@@ -11,6 +9,7 @@ public class FileObjectModel {
     private String port;
     private String filePath;
     private String actionType;
+    private CommunicationDataModel comData;
 
     public FileObjectModel(String filePath, String actionType, String ip, String senderIp, String port) {
         this.filePath = filePath;
@@ -18,6 +17,17 @@ public class FileObjectModel {
         this.ip = ip;
         this.senderIp = senderIp;
         this.port = port;
+        comData = null;
+    }
+
+    public FileObjectModel(String filePath, String actionType, String ip, String senderIp,
+                           String port, CommunicationDataModel comData) {
+        this.filePath = filePath;
+        this.actionType = actionType;
+        this.ip = ip;
+        this.senderIp = senderIp;
+        this.port = port;
+        this.comData = comData;
     }
 
     public String getFilePath() {
@@ -38,5 +48,9 @@ public class FileObjectModel {
 
     public String getSenderIp() {
         return senderIp;
+    }
+
+    public CommunicationDataModel getComData() {
+        return comData;
     }
 }

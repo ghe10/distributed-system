@@ -1,5 +1,6 @@
 package network;
 
+import network.datamodel.CommunicationDataModel;
 import network.datamodel.FileDataModel;
 import network.datamodel.FileObjectModel;
 import usertool.Constants;
@@ -15,7 +16,8 @@ public class TcpFileSendHelper implements Runnable {
     private long sleepInterval;
     private String myIp;
 
-    public TcpFileSendHelper(LinkedList<Object> objectQueue, LinkedList<FileDataModel> fileQueue) throws UnknownHostException {
+    public TcpFileSendHelper(LinkedList<Object> objectQueue,
+                             LinkedList<FileDataModel> fileQueue) throws UnknownHostException {
         this.objectQueue = objectQueue;
         this.fileQueue = fileQueue;
         shutDown = false;

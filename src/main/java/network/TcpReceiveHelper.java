@@ -8,7 +8,7 @@ import java.net.Socket;
 /**
  * This class serves as a base class of all the tcp receivers
  */
-public class TcpReceiveHelper implements Runnable{
+public class TcpReceiveHelper implements Runnable {
     private Boolean initSuccess;
     protected Boolean shutDown;
     protected ServerSocket serverSocket;

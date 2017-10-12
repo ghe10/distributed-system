@@ -48,6 +48,10 @@ public class FileStorageLocalDataModel {
         }
     }
 
+    public void setReplicas(HashSet<String> replicaIps) {
+        this.replicaIps = replicaIps;
+    }
+
     public HashSet<String> getReplicaIps() {
         return replicaIps;
     }

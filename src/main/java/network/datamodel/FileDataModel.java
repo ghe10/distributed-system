@@ -8,10 +8,18 @@ package network.datamodel;
 // I think we should depreticate this shit
 public class FileDataModel extends BasicModel {
     private String filePath;
+    private CommunicationDataModel communicationInfo;
 
     public FileDataModel(String ip, int port, String filePath) {
         super(FileObjectModel.class, ip, port);
         this.filePath = filePath;
+        communicationInfo = null;
+    }
+
+    public FileDataModel(String ip, int port, String filePath, CommunicationDataModel communicationInfo) {
+        super(FileObjectModel.class, ip, port);
+        this.filePath = filePath;
+        this.communicationInfo = communicationInfo;
     }
 
     public String getIp(){
@@ -24,5 +32,9 @@ public class FileDataModel extends BasicModel {
 
     public int getPort() {
         return port;
+    }
+
+    public CommunicationDataModel getCommunicationInfo() {
+        return communicationInfo;
     }
 }

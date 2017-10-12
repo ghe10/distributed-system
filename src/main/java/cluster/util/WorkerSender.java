@@ -1,5 +1,6 @@
 package cluster.util;
 
+import network.TcpComDataSendHelper;
 import network.TcpFileSendHelper;
 import network.TcpObjectSendHelper;
 import network.datamodel.CommunicationDataModel;
@@ -16,16 +17,16 @@ import java.util.LinkedList;
 public class WorkerSender {
     private TcpFileSendHelper tcpFileSendHelper;
     private TcpObjectSendHelper tcpObjectSendHelper;
-    private TcpObjectSendHelper communicationHelper;
+    private TcpComDataSendHelper communicationHelper;
     private Thread fileThread;
     private Thread objectThread;
     private Thread communicationThread;
 
     public WorkerSender(LinkedList<Object> objectQueue, LinkedList<FileDataModel> fileQueue,
-                        LinkedList<Object> communicationQueue) throws UnknownHostException {
+                        LinkedList<CommunicationDataModel> communicationQueue) throws UnknownHostException {
         tcpFileSendHelper = new TcpFileSendHelper(objectQueue, fileQueue);
-        tcpObjectSendHelper = new TcpObjectSendHelper(objectQueue);
-        communicationHelper = new TcpObjectSendHelper(communicationQueue);
+        tcpObjectSendHelper = new TcpObjectSendHelper(objectQueue, communicationQueue);
+        communicationHelper = new TcpComDataSendHelper(communicationQueue);
         fileThread = new Thread(tcpFileSendHelper);
         objectThread = new Thread(tcpObjectSendHelper);
         communicationThread = new Thread(communicationHelper);
@@ -38,7 +39,7 @@ public class WorkerSender {
         tcpFileSendHelper.addFileTask(fileDataModel);
     }
 
-    public LinkedList<Object> getCommunicationQueue() {
+    public LinkedList<CommunicationDataModel> getCommunicationQueue() {
         return communicationHelper.getObjectQueue();
     }
 

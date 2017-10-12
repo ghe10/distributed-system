@@ -6,12 +6,15 @@ import cluster.instance.Worker;
 import cluster.server.Server;
 import cluster.util.WorkerReceiver;
 import cluster.util.WorkerSender;
+import network.datamodel.CommunicationDataModel;
 import network.datamodel.FileDataModel;
 import network.datamodel.FileObjectModel;
+import network.datamodel.FileStorageLocalDataModel;
 import org.kohsuke.args4j.Option;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Scanner;
 
@@ -32,9 +35,10 @@ public class Main {
     private static String hostPort = null;
 
     private static LinkedList<Object> objectQueue;
-    private static LinkedList<Object> communicationQueue;
+    private static LinkedList<CommunicationDataModel> communicationQueue;
     // this communicationQueue queue contains the info to send, the receive is handled by master's thread
     private static LinkedList<FileDataModel> fileQueue;
+    private static Hashtable<String, FileStorageLocalDataModel> fileStorageInfo;
 
     private static WorkerReceiver workerReceiver = null;
     private static WorkerSender workerSender = null;
@@ -56,7 +60,7 @@ public class Main {
             fileQueue = new LinkedList<FileDataModel>();
             hostPort = hostPort != null ? hostPort : Constants.DEFAULT_HOST_PORT.getValue();
             master = new Master(hostPort, Integer.parseInt(Constants.DEFAULT_SESSION_TIMEOUT.getValue()),
-                    communicationQueue);
+                    communicationQueue, fileStorageInfo);
             master.runForMaster();
 
             workerReceiver = new WorkerReceiver(
@@ -77,7 +81,7 @@ public class Main {
                 System.out.println("******************* Try init worker ********************");
             }
             worker = new Worker(hostPort, null, Integer.parseInt(Constants.DEFAULT_SESSION_TIMEOUT.getValue()),
-                    workerSender, workerReceiver);
+                    workerSender, workerReceiver, fileStorageInfo);
             // we need another thread to do process the real task, I think it should be init here
         } else {
             // default is client mode
