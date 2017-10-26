@@ -1,9 +1,5 @@
 package network.datamodel;
 
-import org.apache.commons.lang3.SerializationUtils;
-
-import java.io.Serializable;
-
 /**
  * This data model represents a file send task, which includes : target ip, target port, file path.
  * To avoid any change to the task after task creation, the parms can't be changed
