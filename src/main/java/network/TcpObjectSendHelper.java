@@ -39,7 +39,7 @@ public class TcpObjectSendHelper extends TcpSendHelper implements Runnable {
                     }
                     TcpSendHelper tcpSendHelper = new TcpSendHelper(
                             Integer.parseInt(object.getPort()), object.getIp());
-                    tcpSendHelper.sendObject(tcpSendHelper);
+                    tcpSendHelper.sendObject(object);
                     if (object.getComData() != null) {
                         synchronized (comDataQueue) {
                             comDataQueue.add(object.getComData());

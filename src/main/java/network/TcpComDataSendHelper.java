@@ -40,7 +40,7 @@ public class TcpComDataSendHelper extends TcpSendHelper implements Runnable {
                     TcpSendHelper tcpSendHelper = new TcpSendHelper(
                             Integer.parseInt(Constants.CLIENT_COMMUNICATION_PORT.getValue()),
                             comData.getActionDestinationIp());
-                    tcpSendHelper.sendObject(tcpSendHelper);
+                    tcpSendHelper.sendObject(comData);
                 }
             } catch (InterruptedException exception) {
                 break;

@@ -1,6 +1,8 @@
 package network.datamodel;
 
-public class NodeInfoModel {
+import java.io.Serializable;
+
+public class NodeInfoModel implements Serializable {
     private String ip;
 
     public NodeInfoModel(String ip) {

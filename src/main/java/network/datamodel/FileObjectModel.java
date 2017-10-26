@@ -1,9 +1,11 @@
 package network.datamodel;
 
+import java.io.Serializable;
+
 /**
  * This model is used to be transmitted in network
  */
-public class FileObjectModel {
+public class FileObjectModel implements Serializable {
     private String ip;
     private String senderIp;
     private String port;

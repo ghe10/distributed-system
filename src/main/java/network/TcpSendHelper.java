@@ -27,7 +27,7 @@ public class TcpSendHelper {
         dataOutputStream.write(bytes);
     }
 
-    public void sendObject(Object object) {
+    public void sendObject(Serializable object) {
         if (object == null) {
             return;
         }
