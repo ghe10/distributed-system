@@ -23,7 +23,7 @@ public class TcpSendHelper {
         }
     }
 
-    private void sendBytes(byte[] bytes) throws IOException{
+    void sendBytes(byte[] bytes) throws IOException {
         dataOutputStream.write(bytes);
     }
 
