@@ -42,11 +42,10 @@ public class TcpSendHelper {
     public void sendFile(String path) {
         File file = new File(path);
         byte[] sendBuffer = new byte[1024];
-        int length = 0;
         try {
             FileInputStream fileInputStream = new FileInputStream(file);
             dataOutputStream.writeUTF(file.getName());
-            while ((length = fileInputStream.read(sendBuffer, 0, sendBuffer.length)) > 0) {
+            while (fileInputStream.read(sendBuffer, 0, sendBuffer.length) > 0) {
                 sendBytes(sendBuffer);
             }
             fileInputStream.close();
