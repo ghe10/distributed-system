@@ -52,5 +52,12 @@ public class TestTcpSendHelper {
         tcpSendHelper.sendFile(filePath);
         verify(tcpSendHelper).sendFile(filePath);
     }
+
+    @Test
+    public void clearTest() {
+        tcpSendHelper.clear();
+
+        verify(tcpSendHelper).clear();
+    }
 }
 
