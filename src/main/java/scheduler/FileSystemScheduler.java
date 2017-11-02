@@ -66,7 +66,7 @@ public class FileSystemScheduler extends BasicWatcher {
         this.fileStorageInfo = fileStorageInfo;
     }
 
-    private HashSet<String> getWorkerIp() {
+    HashSet<String> getWorkerIp() {
         HashSet<String> workerIps = new HashSet<String>();
         try {
             List<String> workers = zooKeeper.getChildren(Constants.WORKER_PATH.getValue(), false);
@@ -83,7 +83,7 @@ public class FileSystemScheduler extends BasicWatcher {
         }
     }
 
-    String randomSchedule(HashSet<String> candidates) {
+    String randomSchedule(Set<String> candidates) {
         if (candidates == null) {
             return null;
         }
@@ -94,6 +94,9 @@ public class FileSystemScheduler extends BasicWatcher {
 
     public String scheduleMainReplica(long fileSize) {
         HashSet<String> workerIps = getWorkerIp();
+        if (workerIps == null) {
+            return null;
+        }
         workerIps.remove(myIp);
         if (mode.equals(Constants.RANDOM.getValue())) {
             return randomSchedule(workerIps);

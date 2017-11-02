@@ -3,29 +3,75 @@ package scheduler;
 import network.datamodel.FileStorageLocalDataModel;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 import usertool.Constants;
 
 import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Hashtable;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.*;
+
+/**
+ * We can use Mockito.CALLS_REAL_METHODS to force real function call in test.
+ * We need to mock for all the possible actions
+ */
 
 public class TestFileSystemScheduler {
 
-    private FileSystemScheduler scheduler = mock(FileSystemScheduler.class, Mockito.CALLS_REAL_METHODS);
+    private FileSystemScheduler scheduler; // = mock(FileSystemScheduler.class, Mockito.CALLS_REAL_METHODS);
 
-    @Test
-    public void scheduleFileGetTest() throws NoSuchFieldException, IllegalAccessException {
+    @Before
+    public void preparation() throws NoSuchFieldException, IllegalAccessException {
+        scheduler = mock(FileSystemScheduler.class);
         Field mode = FileSystemScheduler.class.getDeclaredField("mode");
         mode.setAccessible(true);
         mode.set(scheduler, Constants.RANDOM.getValue());
+    }
 
+    @Test
+    public void setAllFileStorageInfoTest() throws NoSuchFieldException, IllegalAccessException {
+        Hashtable<String, FileStorageLocalDataModel> fileStorageInfo = mock(Hashtable.class);
+        scheduler.setAllFileStorageInfo(fileStorageInfo);
+
+        verify(scheduler).setAllFileStorageInfo(fileStorageInfo);
+    }
+
+    @Test
+    public void scheduleMainReplicaTest() {
+        String testIp = "ip";
+        long fileSize = 0L;
+        HashSet<String> ips = mock(HashSet.class);
+        when(scheduler.randomSchedule(ips)).thenReturn(testIp);
+        when(scheduler.getWorkerIp()).thenReturn(new HashSet<>());
+        when(ips.remove(anyString())).thenReturn(true);
+        when(scheduler.randomSchedule(any(HashSet.class))).thenReturn(testIp);
+        when(scheduler.getWorkerIp()).thenReturn(ips);
+        scheduler.scheduleMainReplica(fileSize);
+
+        verify(scheduler).scheduleMainReplica(fileSize);
+    }
+
+    @Test
+    public void scheduleMainReplicaNullTest() {
+        String testIp = "ip";
+        long fileSize = 0L;
+        HashSet<String> ips = mock(HashSet.class);
+        when(scheduler.randomSchedule(ips)).thenReturn(testIp);
+        when(scheduler.getWorkerIp()).thenReturn(null);
+        when(ips.remove(anyString())).thenReturn(true);
+        when(scheduler.randomSchedule(any(HashSet.class))).thenReturn(testIp);
+        when(scheduler.getWorkerIp()).thenReturn(ips);
+        scheduler.scheduleMainReplica(fileSize);
+
+        verify(scheduler).scheduleMainReplica(fileSize);
+    }
+
+    @Test
+    public void scheduleFileGetTest() {
         Hashtable<String, FileStorageLocalDataModel> fileStorageInfo = mock(Hashtable.class);
         FileStorageLocalDataModel fileStorageLocalDataModel = mock(FileStorageLocalDataModel.class);
-        String result = "ip1", mockName = "mockName", testIp1 = "ip1", testIp2 = "ip2";
+        String result = "ip1", mockName = "mockName", falseName = "falseName", testIp1 = "ip1", testIp2 = "ip2";
         HashSet<String> replicaIps = mock(HashSet.class);
         scheduler.setAllFileStorageInfo(fileStorageInfo);
         when(fileStorageInfo.containsKey(mockName)).thenReturn(true);
@@ -33,30 +79,9 @@ public class TestFileSystemScheduler {
         when(fileStorageLocalDataModel.getReplicaIps()).thenReturn(replicaIps);
         when(scheduler.randomSchedule(any(HashSet.class))).thenReturn(testIp1);
 
-        assertEquals(testIp1, scheduler.scheduleFileGet(mockName));
-        verify(scheduler).scheduleFileGet(mockName);
-    }
-
-/*
-    @Before
-    public void prepare() {
-
-    }
-
-    @Test
-    public void scheduleFileGetTest() throws UnknownHostException {
-        String result = "ip1", mockName = "mockName", testIp1 = "ip1", testIp2 = "ip2";
-        Hashtable<String, FileStorageLocalDataModel> fileStorageInfo = mock(Hashtable.class);
-        HashSet<String> replicaIps = mock(HashSet.class);
-
-        FileSystemScheduler scheduler =
-                new FileSystemScheduler("", 0, Constants.RANDOM.getValue(), fileStorageInfo);
-
-        when(fileStorageInfo.containsKey(mockName)).thenReturn(true);
-        when(scheduler.randomSchedule(replicaIps)).thenReturn(testIp1);
-
+        //assertEquals(testIp1, scheduler.scheduleFileGet(mockName));
         scheduler.scheduleFileGet(mockName);
         verify(scheduler).scheduleFileGet(mockName);
+        assertNull(scheduler.scheduleFileGet(falseName));
     }
-    */
 }
