@@ -27,9 +27,15 @@ public class TestTcpSendHelper {
         DataOutputStream dataOutputStream = mock(DataOutputStream.class);
         field.set(tcpSendHelper, dataOutputStream);
         doNothing().when(dataOutputStream).write(any(byte[].class));
-        tcpSendHelper.sendBytes(any(byte[].class));
 
-        verify(tcpSendHelper).sendBytes(any(byte[].class));
+        tcpSendHelper.sendBytes(new byte[10]);
+        verify(tcpSendHelper).sendBytes(new byte[10]);
+
+        tcpSendHelper.sendBytes(new byte[0]);
+        verify(tcpSendHelper).sendBytes(new byte[0]);
+
+        tcpSendHelper.sendBytes(null);
+        verify(tcpSendHelper).sendBytes(null);
     }
 
     @Test
@@ -79,4 +85,3 @@ public class TestTcpSendHelper {
         verify(tcpSendHelper).clear();
     }
 }
-

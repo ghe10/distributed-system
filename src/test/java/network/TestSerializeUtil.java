@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class TestSerializeUtil {
-    // Test the seralize deserialize together
+    // Test the serialize deserialize together
     @Test
     public void serializeDeserializeTest() {
         ArrayList<String> list = new ArrayList<>(Arrays.asList("Buenos Aires", "Córdoba", "La Plata"));
