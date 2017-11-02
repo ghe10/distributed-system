@@ -4,13 +4,12 @@ package network;
 import network.datamodel.FileDataModel;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class TestSerializeUtil {
-    // Test the seraliza deserialize together
+    // Test the seralize deserialize together
     @Test
     public void serializeDeserializeTest() {
         ArrayList<String> list = new ArrayList<>(Arrays.asList("Buenos Aires", "Córdoba", "La Plata"));

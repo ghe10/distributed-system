@@ -26,6 +26,10 @@ public class FileSystemScheduler extends BasicWatcher {
     private String myIp;
     private Hashtable<String, FileStorageLocalDataModel> fileStorageInfo;
 
+    FileSystemScheduler() {
+        super(Constants.DEFAULT_HOST_PORT.getValue(), 10000);
+    }
+
     public FileSystemScheduler(String hostPort, int sessionTimeOut,
                   WorkerSender workerSender, WorkerReceiver workerReceiver) throws UnknownHostException {
         super(hostPort, sessionTimeOut);
@@ -58,6 +62,10 @@ public class FileSystemScheduler extends BasicWatcher {
         this.fileStorageInfo = fileStorageInfo;
     }
 
+    void setAllFileStorageInfo(Hashtable<String, FileStorageLocalDataModel> fileStorageInfo) {
+        this.fileStorageInfo = fileStorageInfo;
+    }
+
     private HashSet<String> getWorkerIp() {
         HashSet<String> workerIps = new HashSet<String>();
         try {
@@ -75,14 +83,13 @@ public class FileSystemScheduler extends BasicWatcher {
         }
     }
 
-    private String randomSchedule(HashSet<String> candidates) {
-        Iterator<String> iterator = candidates.iterator();
-        int size = candidates.size();
-        int index = random.nextInt() % size;
-        for (int i = 0; i < index - 1; i++){
-            iterator.next();
+    String randomSchedule(HashSet<String> candidates) {
+        if (candidates == null) {
+            return null;
         }
-        return iterator.next();
+        ArrayList<String> list = new ArrayList<>(candidates);
+        int index = random.nextInt() % list.size();
+        return list.get(index);
     }
 
     public String scheduleMainReplica(long fileSize) {
@@ -119,14 +126,18 @@ public class FileSystemScheduler extends BasicWatcher {
     }
 
     public String scheduleFileGet(String fileName) {
-        FileStorageLocalDataModel thisFileStorageInfo = fileStorageInfo.getOrDefault(fileName, null);
-        if (thisFileStorageInfo == null) {
-            return null;
+        String resultIp = null;
+        HashSet<String> replicaIps = null;
+        if (fileStorageInfo.containsKey(fileName)) {
+            replicaIps = fileStorageInfo.get(fileName).getReplicaIps();
+            if (mode.equals(Constants.RANDOM.getValue())) {
+                resultIp = randomSchedule(replicaIps);
+            } else {
+                resultIp = randomSchedule(replicaIps);
+            }
+        } else {
+            resultIp = null;
         }
-        if (mode.equals(Constants.RANDOM.getValue())) {
-            return randomSchedule(thisFileStorageInfo.getReplicaIps());
-        }
-        return null;
+        return resultIp;
     }
-
 }

@@ -3,15 +3,34 @@ package network;
 import network.datamodel.FileDataModel;
 import org.junit.Test;
 
-import java.io.FileInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.Field;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
+/*
+Second second = mock(Second.class)
+when(second.doSecond()).thenReturn("Stubbed Second");
+whenNew(Second.class).withAnyArguments.thenReturn(second);
+ */
 public class TestTcpSendHelper {
     final static TcpSendHelper tcpSendHelper = mock(TcpSendHelper.class);
+
+    @Test
+    public void sendBytesTest() throws IOException, NoSuchFieldException, IllegalAccessException {
+        Field field = TcpSendHelper.class.getDeclaredField("dataOutputStream");
+        field.setAccessible(true);
+
+        DataOutputStream dataOutputStream = mock(DataOutputStream.class);
+        field.set(tcpSendHelper, dataOutputStream);
+        doNothing().when(dataOutputStream).write(any(byte[].class));
+        tcpSendHelper.sendBytes(any(byte[].class));
+
+        verify(tcpSendHelper).sendBytes(any(byte[].class));
+    }
 
     @Test
     public void sendObjectTest() throws IOException {
