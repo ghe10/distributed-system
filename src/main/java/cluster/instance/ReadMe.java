@@ -59,6 +59,10 @@ package cluster.instance;
  *
  * ******* Master only servers for ack ips, other actions like command send should be done be client *******
  *
+ * 2017.11.3
+ * Result result = JUnitCore.runClasses(TestJunit.class);
+ * This can run test in main class
+ *
  */
 public class ReadMe {
 
