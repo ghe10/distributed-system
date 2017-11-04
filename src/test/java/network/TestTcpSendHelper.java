@@ -1,87 +1,170 @@
 package network;
 
 import network.datamodel.FileDataModel;
+import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.Serializable;
+import java.io.*;
 import java.lang.reflect.Field;
-
+import java.net.Socket;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
-/*
-Second second = mock(Second.class)
-when(second.doSecond()).thenReturn("Stubbed Second");
-whenNew(Second.class).withAnyArguments.thenReturn(second);
- */
 public class TestTcpSendHelper {
-    final static TcpSendHelper tcpSendHelper = mock(TcpSendHelper.class);
+    private TcpSendHelper tcpSendHelper;
+    private TcpSendHelper spyTcpSendHelper;
+    private Socket socket;
+    private DataOutputStream dataOutputStream;
+    private static final boolean ACCESS_TRUE = true;
+
+    @Before
+    public void preparation() throws NoSuchFieldException, IllegalAccessException {
+        Field socketField = TcpSendHelper.class.getDeclaredField("socket");
+        socketField.setAccessible(ACCESS_TRUE);
+        Field dataOutputStreamField = TcpSendHelper.class.getDeclaredField("dataOutputStream");
+        dataOutputStreamField.setAccessible(ACCESS_TRUE);
+
+        tcpSendHelper = new TcpSendHelper();
+        spyTcpSendHelper = spy(tcpSendHelper);
+        socket = mock(Socket.class);
+        dataOutputStream = mock(DataOutputStream.class);
+
+        socketField.set(spyTcpSendHelper, socket);
+        dataOutputStreamField.set(spyTcpSendHelper, dataOutputStream);
+    }
 
     @Test
     public void sendBytesTest() throws IOException, NoSuchFieldException, IllegalAccessException {
-        Field field = TcpSendHelper.class.getDeclaredField("dataOutputStream");
-        field.setAccessible(true);
-
-        DataOutputStream dataOutputStream = mock(DataOutputStream.class);
-        field.set(tcpSendHelper, dataOutputStream);
         doNothing().when(dataOutputStream).write(any(byte[].class));
 
-        tcpSendHelper.sendBytes(new byte[10]);
-        verify(tcpSendHelper).sendBytes(new byte[10]);
+        spyTcpSendHelper.sendBytes(new byte[10]);
+        verify(spyTcpSendHelper).sendBytes(new byte[10]);
 
-        tcpSendHelper.sendBytes(new byte[0]);
-        verify(tcpSendHelper).sendBytes(new byte[0]);
+        spyTcpSendHelper.sendBytes(new byte[0]);
+        verify(spyTcpSendHelper).sendBytes(new byte[0]);
 
-        tcpSendHelper.sendBytes(null);
-        verify(tcpSendHelper).sendBytes(null);
+        spyTcpSendHelper.sendBytes(null);
+        verify(spyTcpSendHelper).sendBytes(null);
     }
 
     @Test
     public void sendObjectTest() throws IOException {
         Serializable object = mock(FileDataModel.class);
-        doNothing().when(tcpSendHelper).sendBytes(any(byte[].class));
+        doNothing().when(spyTcpSendHelper).sendBytes(any(byte[].class));
 
-        tcpSendHelper.sendObject(object);
-        tcpSendHelper.sendObject(null);
-        verify(tcpSendHelper).sendObject(object);
-        verify(tcpSendHelper).sendObject(null);
+        spyTcpSendHelper.sendObject(object);
+        spyTcpSendHelper.sendObject(null);
+        verify(spyTcpSendHelper).sendObject(object);
+        verify(spyTcpSendHelper).sendObject(null);
     }
 
     @Test
     public void sendObjectExceptionTest() throws IOException {
         Serializable object = mock(FileDataModel.class);
-        doThrow(IOException.class).when(tcpSendHelper).sendBytes(any(byte[].class));
+        doThrow(IOException.class).when(spyTcpSendHelper).sendBytes(any(byte[].class));
 
-        tcpSendHelper.sendObject(object);
-        verify(tcpSendHelper).sendObject(object);
+        spyTcpSendHelper.sendObject(object);
+        verify(spyTcpSendHelper).sendObject(object);
     }
 
     @Test
-    public void sendFileTest() throws IOException {
+    public void sendFileTest() throws IOException, NoSuchMethodException {
         String filePath = "";
-        doNothing().when(tcpSendHelper).sendBytes(any(byte[].class));
+        File file = mock(File.class);
+        FileInputStream fileInputStream = mock(FileInputStream.class);
 
-        // what should be done inside? it is always exception actually
-        tcpSendHelper.sendFile(filePath);
-        verify(tcpSendHelper).sendFile(filePath);
+        doReturn(filePath).when(file).getName();
+        doNothing().when(dataOutputStream).writeUTF(filePath);
+        doReturn(0).when(fileInputStream).read(any(byte[].class), anyInt(), anyInt());
+        doNothing().when(fileInputStream).close();
+        doReturn(fileInputStream).when(spyTcpSendHelper).createFileInputStream(any(File.class));
+        doNothing().when(spyTcpSendHelper).sendBytes(any(byte[].class));
+
+        spyTcpSendHelper.sendFile(filePath);
+        verify(spyTcpSendHelper).sendFile(filePath);
     }
 
     @Test
-    public void sendFileExceptionTest() throws IOException {
-        String filePath = null;
-        doNothing().when(tcpSendHelper).sendBytes(any(byte[].class));
+    public void sendFileWrongInputTest() throws IOException {
+        String filePath = "";
+        doNothing().when(spyTcpSendHelper).sendBytes(any(byte[].class));
 
-        // what should be done inside? it is always exception actually
-        tcpSendHelper.sendFile(filePath);
-        verify(tcpSendHelper).sendFile(filePath);
+        spyTcpSendHelper.sendFile(filePath);
+        verify(spyTcpSendHelper).sendFile(filePath);
+        spyTcpSendHelper.sendFile(null);
+        verify(spyTcpSendHelper).sendFile(null);
     }
 
     @Test
-    public void clearTest() {
-        tcpSendHelper.clear();
+    public void sendFileWriteExceptionTest() throws IOException, NoSuchMethodException {
+        String filePath = "";
+        File file = mock(File.class);
+        FileInputStream fileInputStream = mock(FileInputStream.class);
 
-        verify(tcpSendHelper).clear();
+        doReturn(filePath).when(file).getName();
+        doReturn(0).when(fileInputStream).read(any(byte[].class), anyInt(), anyInt());
+        doNothing().when(fileInputStream).close();
+        doReturn(fileInputStream).when(spyTcpSendHelper).createFileInputStream(any(File.class));
+        doNothing().when(spyTcpSendHelper).sendBytes(any(byte[].class));
+
+
+        doThrow(IOException.class).when(dataOutputStream).writeUTF(filePath);
+        spyTcpSendHelper.sendFile(filePath);
+        verify(spyTcpSendHelper).sendFile(filePath);
+    }
+
+    @Test
+    public void sendFileReadExceptionTest() throws IOException, NoSuchMethodException {
+        String filePath = "";
+        File file = mock(File.class);
+        FileInputStream fileInputStream = mock(FileInputStream.class);
+
+        doReturn(filePath).when(file).getName();
+        doNothing().when(dataOutputStream).writeUTF(filePath);
+        doNothing().when(fileInputStream).close();
+        doReturn(fileInputStream).when(spyTcpSendHelper).createFileInputStream(any(File.class));
+        doNothing().when(spyTcpSendHelper).sendBytes(any(byte[].class));
+
+        doThrow(IOException.class).when(fileInputStream).read(any(byte[].class), anyInt(), anyInt());
+        spyTcpSendHelper.sendFile(filePath);
+        verify(spyTcpSendHelper).sendFile(filePath);
+    }
+
+    @Test
+    public void clearTest() throws IOException {
+        spyTcpSendHelper.clear();
+        doNothing().when(socket).close();
+        doNothing().when(dataOutputStream).close();
+        verify(spyTcpSendHelper).clear();
+    }
+
+    @Test
+    @Ignore
+    public void sendFileTestBackUp() throws IOException, NoSuchMethodException {
+//        Method createFileInputStreamMethod = TcpSendHelper.class.getDeclaredMethod("createFileInputStream");
+//        createFileInputStreamMethod.setAccessible(ACCESS_TRUE);
+        String filePath = "";
+        File file = mock(File.class);
+        FileInputStream fileInputStream = mock(FileInputStream.class);
+        //Mockito.when(new Second(any(String.class).thenReturn(null);
+        //doReturn(file).when(new File(anyString()));
+//        whenNew(File.class).withAnyArguments().thenReturn(file);
+//        whenNew(FileInputStream.class).withAnyArguments().thenReturn(fileInputStream);
+        /*
+        Second second = Mockito.mock(Second.class);
+whenNew(Second.class).withNoArguments().thenReturn(second);
+         */
+        doReturn(filePath).when(file).getName();
+        doNothing().when(dataOutputStream).writeUTF(filePath);
+        doReturn(0).when(fileInputStream).read(any(byte[].class), anyInt(), anyInt());
+        doNothing().when(fileInputStream).close();
+        //doReturn(fileInputStream).when(new FileInputStream(anyString()));
+
+        doNothing().when(spyTcpSendHelper).sendBytes(any(byte[].class));
+
+        // what should be done inside? it is always exception actually
+        spyTcpSendHelper.sendFile(filePath);
+        verify(spyTcpSendHelper).sendFile(filePath);
     }
 }

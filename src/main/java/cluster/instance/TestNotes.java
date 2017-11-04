@@ -122,6 +122,17 @@ public class PrimeNumberCheckerTest {
 
     //You have to use doReturn() for stubbing
     doReturn("foo").when(spy).get(0);
+
+ *
+ *
+ * Test with new in mockito
+ * when(new File(anyString())).thenReturn(file); // not working
+ *
+     * powermock
+ *  whenNew(File.class).withAnyArguments().thenReturn(file);
+    whenNew(FileInputStream.class).withAnyArguments().thenReturn(fileInputStream);
+ *
+ * These will call real constructor, but returns sth planned
  */
 public class TestNotes {
 }

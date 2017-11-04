@@ -8,6 +8,7 @@ cluster/instance/Client.class
 network/TcpComDataSendHelper.class
 cluster/instance/Worker.class
 cluster/instance/Master$2.class
+cluster/instance/TestNotes.class
 cluster/instance/Worker$WorkerThread.class
 cluster/util/FileSystemUtil.class
 network/TcpSendHelper.class

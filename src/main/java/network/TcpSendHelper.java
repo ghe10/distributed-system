@@ -6,7 +6,7 @@ import java.net.Socket;
 public class TcpSendHelper {
     private Socket socket;
     private DataOutputStream dataOutputStream;
-    public Boolean initSuccess;
+    private Boolean initSuccess;
 
     public TcpSendHelper() {
 
@@ -35,15 +35,34 @@ public class TcpSendHelper {
         try {
             sendBytes(bytes);
         } catch (IOException exception) {
+            System.out.println("sendObject got an exception");
             exception.printStackTrace();
         }
     }
 
-    public void sendFile(String path) {
-        File file = new File(path);
-        byte[] sendBuffer = new byte[1024];
+    public boolean isInitSuccess() {
+        return initSuccess;
+    }
+
+    FileInputStream createFileInputStream(File file) {
         try {
-            FileInputStream fileInputStream = new FileInputStream(file);
+            return new FileInputStream(file);
+        } catch (FileNotFoundException exception) {
+            return null;
+        }
+    }
+
+    public void sendFile(String path) {
+        byte[] sendBuffer = new byte[1024];
+        if (path == null) {
+            // according to our test, path == null is not handled by new File
+            return;
+        }
+        try {
+            File file = new File(path);
+            FileInputStream fileInputStream = createFileInputStream(file);
+            if (fileInputStream == null)
+                return;
             dataOutputStream.writeUTF(file.getName());
             while (fileInputStream.read(sendBuffer, 0, sendBuffer.length) > 0) {
                 sendBytes(sendBuffer);
