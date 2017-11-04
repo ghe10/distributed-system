@@ -28,6 +28,7 @@ public class FileSystemScheduler extends BasicWatcher {
 
     FileSystemScheduler() {
         super(Constants.DEFAULT_HOST_PORT.getValue(), 10000);
+        mode = Constants.RANDOM.getValue();
     }
 
     public FileSystemScheduler(String hostPort, int sessionTimeOut,
