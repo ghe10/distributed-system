@@ -1,0 +1,4 @@
+cluster/MembershipHandlerTest.class
+utils/StaticUtilsTest.class
+cluster/NodeTest.class
+zookeeperserver/ZookeeperServerTest.class
