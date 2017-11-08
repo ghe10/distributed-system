@@ -4,6 +4,7 @@ import cluster.instance.Client;
 import cluster.instance.Master;
 import cluster.instance.Worker;
 import cluster.server.Server;
+import cluster.util.MasterUtil;
 import cluster.util.WorkerReceiver;
 import cluster.util.WorkerSender;
 import network.datamodel.CommunicationDataModel;
@@ -14,6 +15,8 @@ import org.kohsuke.args4j.Option;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Scanner;
@@ -25,13 +28,13 @@ import java.util.Scanner;
  * (3) get user input and take correct operation
  */
 public class Main {
-    @Option(name = "-m", usage = "specify mode: s for server, w for worker, c for client")
+    //@Option(name = "-m", usage = "specify mode: s for server, w for worker, c for client")
     private static String mode = null;
 
-    @Option(name = "-cfg", usage = "config path")
+    //@Option(name = "-cfg", usage = "config path")
     private static String configPath = null;
 
-    @Option(name = "-p", usage = "specify host port")
+    //@Option(name = "-p", usage = "specify host port")
     private static String hostPort = null;
 
     private static LinkedList<Object> objectQueue;
@@ -43,12 +46,23 @@ public class Main {
     private static WorkerReceiver workerReceiver = null;
     private static WorkerSender workerSender = null;
 
+    private static final String LIST_NODES = "list_nodes";
+
     public static void main(String[] args) throws IOException, InterruptedException {
         Thread thread = null;
         Server server = null;
         Worker worker = null;
         Master master = null;
         Client client = null;
+
+        Path currentRelativePath = Paths.get("");
+        String s = currentRelativePath.toAbsolutePath().toString();
+        System.out.println("Current relative path is: " + s);
+
+        System.out.println("Please input mode !");
+        Scanner scanner = new Scanner(System.in);
+        mode = scanner.next();
+        System.out.println(String.format("Input command : %s", mode));
 
         if (mode.equals(Constants.SERVER_MODE.getValue())) {
             configPath = configPath != null ? configPath : Constants.DEFAULT_CONFIG_PATH.getValue();
@@ -94,7 +108,7 @@ public class Main {
 
         while (true) {
             // infinite loop for user input
-            Scanner scanner = new Scanner(System.in);
+            scanner = new Scanner(System.in);
             String command = scanner.next();
             System.out.println(String.format("Input command : %s",command));
             if (command.equals(Constants.SHUT_DOWN.getValue())) {
@@ -113,6 +127,9 @@ public class Main {
                     while (!master.shutDown()) { }
                 }
                 break;
+            } else if (command.equals(LIST_NODES)) {
+                client.getMasterInfo();
+
             } else {
                 // other scenario
                 System.out.println("******************* Invalid input ********************");

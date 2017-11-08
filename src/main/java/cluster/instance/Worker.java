@@ -1,5 +1,6 @@
 package cluster.instance;
 
+import cluster.util.MasterUtil;
 import cluster.util.WorkerInstanceModel;
 import cluster.util.WorkerReceiver;
 import cluster.util.WorkerSender;
@@ -35,7 +36,9 @@ public class Worker extends BasicWatcher {
     private LinkedList<Object> fileSystemObjectQueue;
     private Hashtable<String, FileStorageLocalDataModel> fileStorageInfo;
     private WorkerThread worker;
+    private WorkerFileSystemThread workerFs;
     private Thread workerThread;
+    private Thread workerFsThread;
 
     public Worker(String hostPort, String serverId, int sessionTimeOut,
                   WorkerSender workerSender, WorkerReceiver workerReceiver,
@@ -49,6 +52,7 @@ public class Worker extends BasicWatcher {
         this.fileStorageInfo = fileStorageInfo;
         fileSystemObjectQueue = workerReceiver.objectQueue;
         worker = new WorkerThread();
+        workerFs = new WorkerFileSystemThread();
         fileSystemScheduler = new FileSystemScheduler(hostPort, sessionTimeOut,
                     workerSender, workerReceiver, Constants.RANDOM.getValue());
         myIp = InetAddress.getLocalHost().getHostAddress();
@@ -62,6 +66,9 @@ public class Worker extends BasicWatcher {
             register();
             workerThread = new Thread(worker);
             workerThread.start();
+            workerFsThread = new Thread(workerFs);
+            workerFsThread.start();
+            System.out.println("Worker started successfully !");
             return true;
         } catch (InterruptedException exception) {
             return false;
@@ -164,9 +171,10 @@ public class Worker extends BasicWatcher {
         }
     }
 
-    private HashSet<String> addReplica(HashSet<String> existingReplicaIps, String filePath, long fileSize) {
+    private HashSet<String> addReplica(HashSet<String> existingReplicaIps, String filePath, long fileSize)
+            throws InterruptedException, KeeperException{
         int replicaGap =  Integer.parseInt(Constants.REPLICATION_NUM.getValue()) + 1 - existingReplicaIps.size();
-        String masterIp = "";
+        String masterIp = MasterUtil.getMasterIp(zooKeeper);
 
         if (replicaGap == 0) {
             return existingReplicaIps;
@@ -264,14 +272,23 @@ public class Worker extends BasicWatcher {
                             storageInfo = fileStorageInfo.get(comData.getSourceFile());
                             storageInfo.setMainReplica(comData.getActionDestinationIp(), myIp);
                             if (storageInfo.isMainReplica(myIp)) {
-                                HashSet<String> replicaIps = addReplica(storageInfo.getReplicaIps(),
-                                        comData.getSourceFile(), comData.getFileSize());
-                                storageInfo.setReplicas(replicaIps);
+                                try {
+                                    HashSet<String> replicaIps = addReplica(storageInfo.getReplicaIps(),
+                                            comData.getSourceFile(), comData.getFileSize());
+                                    storageInfo.setReplicas(replicaIps);
+                                } catch(KeeperException exception) {
+                                    System.err.println("Keeper exception");
+                                    exception.printStackTrace();
+                                } catch(InterruptedException exception) {
+                                    System.err.println("Interrupted exception");
+                                    exception.printStackTrace();
+                                }
                             }
                             fileStorageInfo.put(comData.getSourceFile(), storageInfo);
                         }
                     } else {
                         // TODO: I don't know...
+                        System.err.println(String.format("Unknown info : %s", comData.getAction()));
                     }
                 }
             }
@@ -324,6 +341,13 @@ public class Worker extends BasicWatcher {
                         fileStorageInfo.put(fileSystemData.getFilePath(), fileStorageLocalDataModel);
                         // TODO: get masterIp here
                         String masterIp = "";
+                        try {
+                            masterIp = MasterUtil.getMasterIp(zooKeeper);
+                        } catch(InterruptedException exception) {
+
+                        } catch(KeeperException exception) {
+
+                        }
                         CommunicationDataModel ackToMaster = new CommunicationDataModel(
                                 myIp, masterIp, fileSystemData.getSenderIp(),
                                 Constants.ADD_FILE_ACK.getValue(),

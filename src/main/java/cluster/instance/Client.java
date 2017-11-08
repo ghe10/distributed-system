@@ -79,7 +79,7 @@ public class Client extends BasicWatcher {
 
 
     /*This function gets the master info*/
-    private NodeInfoModel getMasterInfo() {
+    public NodeInfoModel getMasterInfo() {
         try {
             //List<String> MasterList = zooKeeper.getChildren(Constants.MASTER_PATH.getValue(), false);
             //String masterPath
