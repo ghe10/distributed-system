@@ -2,21 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="71131cbe-2a3c-445f-a9a4-4f80464dfaff" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/cluster/BasicObserver.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/java/utils/ObservableListTest.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/java/utils/ObserveTest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/cluster/MembershipHandler.class" afterPath="$PROJECT_DIR$/target/classes/cluster/MembershipHandler.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/test-classes/cluster/MembershipHandlerTest.class" afterPath="$PROJECT_DIR$/target/test-classes/cluster/MembershipHandlerTest.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/test-classes/utils/StaticUtilsTest.class" afterPath="$PROJECT_DIR$/target/test-classes/utils/StaticUtilsTest.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/cluster/MembershipHandler.java" afterPath="$PROJECT_DIR$/src/main/java/cluster/MembershipHandler.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/cluster/Node.java" afterPath="$PROJECT_DIR$/src/main/java/cluster/Node.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/utils/ObservableList.java" afterPath="$PROJECT_DIR$/src/main/java/utils/ObservableList.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/java/cluster/MembershipHandlerTest.java" afterPath="$PROJECT_DIR$/src/test/java/cluster/MembershipHandlerTest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/java/cluster/NodeTest.java" afterPath="$PROJECT_DIR$/src/test/java/cluster/NodeTest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/java/utils/StaticUtilsTest.java" afterPath="$PROJECT_DIR$/src/test/java/utils/StaticUtilsTest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/surefire-reports/TEST-zookeeperserver.ZookeeperServerTest.xml" afterPath="$PROJECT_DIR$/target/surefire-reports/TEST-zookeeperserver.ZookeeperServerTest.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/surefire-reports/zookeeperserver.ZookeeperServerTest.txt" afterPath="$PROJECT_DIR$/target/surefire-reports/zookeeperserver.ZookeeperServerTest.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -71,7 +57,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ObservableList.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ObservableList.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/utils/ObservableList.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="561">
@@ -79,6 +65,16 @@
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="README.md" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/README.md">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="108">
+              <caret line="6" column="72" lean-forward="false" selection-start-line="6" selection-start-column="72" selection-end-line="6" selection-end-column="72" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -136,6 +132,7 @@
         <option value="$PROJECT_DIR$/src/test/java/utils/ObserveTest.java" />
         <option value="$PROJECT_DIR$/src/test/java/utils/ObservableListTest.java" />
         <option value="$PROJECT_DIR$/src/main/java/utils/ObservableList.java" />
+        <option value="$PROJECT_DIR$/README.md" />
       </list>
     </option>
   </component>
@@ -652,6 +649,14 @@
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="108">
+          <caret line="6" column="72" lean-forward="false" selection-start-line="6" selection-start-column="72" selection-end-line="6" selection-end-column="72" />
+          <folding />
         </state>
       </provider>
     </entry>
