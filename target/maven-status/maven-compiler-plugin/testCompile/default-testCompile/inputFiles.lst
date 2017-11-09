@@ -1,4 +1,6 @@
 /home/ghe10/ghe10/distributed_system/DS/src/test/java/cluster/NodeTest.java
 /home/ghe10/ghe10/distributed_system/DS/src/test/java/utils/StaticUtilsTest.java
 /home/ghe10/ghe10/distributed_system/DS/src/test/java/cluster/MembershipHandlerTest.java
+/home/ghe10/ghe10/distributed_system/DS/src/test/java/utils/ObservableListTest.java
+/home/ghe10/ghe10/distributed_system/DS/src/test/java/utils/ObserveTest.java
 /home/ghe10/ghe10/distributed_system/DS/src/test/java/zookeeperserver/ZookeeperServerTest.java

@@ -2,6 +2,7 @@ package cluster;
 
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
+import utils.ObservableList;
 import utils.StaticUtils;
 
 import java.net.UnknownHostException;
@@ -11,7 +12,7 @@ import static org.apache.zookeeper.ZooDefs.Ids.OPEN_ACL_UNSAFE;
 
 public class Node {
     private ZooKeeper zooKeeper;
-    private LinkedList<String> deadEventQueue;
+    private ObservableList<String> deadEventQueue;
     private HashSet<String> nodeIps;
     private String masterIp;
     private String serverId;
@@ -21,7 +22,7 @@ public class Node {
     private static final String NODE_PATH = "/nodes";
     private static final String MASTER_PATH = "/master";
 
-    public Node(ZooKeeper zooKeeper, LinkedList<String> deadEventQueue) throws UnknownHostException {
+    public Node(ZooKeeper zooKeeper, ObservableList<String> deadEventQueue) throws UnknownHostException {
         this.zooKeeper = zooKeeper;
         this.deadEventQueue = deadEventQueue;
         nodeIps = new HashSet<String>();
@@ -229,18 +230,18 @@ public class Node {
                 } else {
                     // these strange locks are designed to avoid deadlock
                     // nodeIps can only be locked here
-                    synchronized (deadEventQueue) {
-                        synchronized (nodeIps) {
-                            nodeIps.removeAll(newNodeIps);
-                            for (String ip : nodeIps) {
-                                deadEventQueue.add(ip);
-                            }
-                            nodeIps = newNodeIps;
-                            deadEventQueue.notifyAll();
+                    synchronized (nodeIps) {
+                        nodeIps.removeAll(newNodeIps);
+                        for (String ip : nodeIps) {
+                            // this add will notify observer
+                            deadEventQueue.add(ip);
                         }
+                        nodeIps = newNodeIps;
                     }
+
                 }
             }
         }
     }
+
 }

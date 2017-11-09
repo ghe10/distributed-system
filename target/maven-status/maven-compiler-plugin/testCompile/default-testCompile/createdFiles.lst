@@ -1,4 +1,6 @@
+utils/ObserveTest.class
 cluster/MembershipHandlerTest.class
 utils/StaticUtilsTest.class
 cluster/NodeTest.class
+utils/ObservableListTest.class
 zookeeperserver/ZookeeperServerTest.class
