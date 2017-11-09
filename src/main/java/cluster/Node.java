@@ -91,7 +91,7 @@ public class Node {
             try {
                 Stat stat = new Stat();
                 byte data[] = zooKeeper.getData(MASTER_PATH, false, stat);
-                isMaster = new String(data).equals(serverId);
+                isMaster = new String(data).equals(nodeIp);
                 return true;
             } catch(InterruptedException exception) {
                 return false;
@@ -127,17 +127,13 @@ public class Node {
         }
     }
 
-    private void bootstrap() {
-        // this function will create a bunch of folders in zookeeper for coordination
-        createParent(NODE_PATH, new byte[0]);
-    }
-
     private void createParent(String path, byte[] data) {
         zooKeeper.create(path, data,
                 ZooDefs.Ids.OPEN_ACL_UNSAFE,
                 CreateMode.PERSISTENT,
                 createParentCallback,
                 data);
+        // the last data is passed to callback in Object ctx
     }
 
     private AsyncCallback.StringCallback createParentCallback = new AsyncCallback.StringCallback() {
@@ -164,7 +160,7 @@ public class Node {
         masterRegistration();
         if (isMaster) {
             // I am Master !!
-            bootstrap();
+            createParent(NODE_PATH, new byte[0]);
         }
     }
     /** This is the end of master operations */
