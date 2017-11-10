@@ -1,7 +1,7 @@
 utils/ObserveTest.class
-filesystem/PlaceHolder.class
 cluster/NodeTest.class
 utils/ObservableListTest.class
+filesystem/FileSystemThreadPoolTest.class
 cluster/MembershipHandlerTest.class
 utils/StaticUtilsTest.class
 filesystem/serializablemodels/FileStorageDataModelTest.class

@@ -1,4 +1,5 @@
 cluster/Node$2.class
+filesystem/FileSystemThreadPool.class
 cluster/Node$3.class
 cluster/Node$1.class
 cluster/BasicObserver.class
