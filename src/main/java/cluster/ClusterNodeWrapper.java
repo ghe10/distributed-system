@@ -1,5 +1,6 @@
 package cluster;
 
+import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooKeeper;
 import utils.ObservableList;
 
@@ -16,10 +17,11 @@ public class ClusterNodeWrapper {
     private Node node;
     private ZooKeeper zooKeeper;
 
-    public ClusterNodeWrapper(ObservableList<String> observableList, Observer observer, String hostPort, int sessionTimeOut)
-            throws IOException {
+    public ClusterNodeWrapper(ObservableList<String> observableList, Observer observer, String hostPort,
+                              int sessionTimeOut) throws IOException, InterruptedException, KeeperException {
         zooKeeper = new ZooKeeper(hostPort, sessionTimeOut, null);
         node = new Node(zooKeeper, observableList);
+        node.initNode();
         MembershipHandler.setMembershipHandler(observableList, observer);
     }
 
