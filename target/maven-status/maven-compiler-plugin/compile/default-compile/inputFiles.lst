@@ -1,6 +1,11 @@
 /home/ghe10/ghe10/distributed_system/DS/src/main/java/cluster/BasicObserver.java
+/home/ghe10/ghe10/distributed_system/DS/src/main/java/cluster/ClusterNodeWrapper.java
+/home/ghe10/ghe10/distributed_system/DS/src/main/java/cluster/ClusterUserClient.java
 /home/ghe10/ghe10/distributed_system/DS/src/main/java/cluster/MembershipHandler.java
+/home/ghe10/ghe10/distributed_system/DS/src/main/java/filesystem/serializablemodels/FileStorageDataModel.java
 /home/ghe10/ghe10/distributed_system/DS/src/main/java/zookeeperserver/ZookeeperServer.java
 /home/ghe10/ghe10/distributed_system/DS/src/main/java/utils/StaticUtils.java
+/home/ghe10/ghe10/distributed_system/DS/src/main/java/filesystem/FileSystemWrapper.java
 /home/ghe10/ghe10/distributed_system/DS/src/main/java/utils/ObservableList.java
+/home/ghe10/ghe10/distributed_system/DS/src/main/java/utils/FileSystemConstants.java
 /home/ghe10/ghe10/distributed_system/DS/src/main/java/cluster/Node.java

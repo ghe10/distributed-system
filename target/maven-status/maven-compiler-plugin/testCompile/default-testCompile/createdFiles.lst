@@ -1,6 +1,8 @@
 utils/ObserveTest.class
-cluster/MembershipHandlerTest.class
-utils/StaticUtilsTest.class
+filesystem/PlaceHolder.class
 cluster/NodeTest.class
 utils/ObservableListTest.class
+cluster/MembershipHandlerTest.class
+utils/StaticUtilsTest.class
+filesystem/serializablemodels/FileStorageDataModelTest.class
 zookeeperserver/ZookeeperServerTest.class
