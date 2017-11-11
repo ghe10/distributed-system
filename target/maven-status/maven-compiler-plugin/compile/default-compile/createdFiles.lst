@@ -9,6 +9,7 @@ cluster/ClusterNodeWrapper.class
 utils/ObservableList.class
 cluster/Node$MasterWatcher.class
 cluster/Node.class
+filesystem/scheduler/RandomScheduler.class
 zookeeperserver/ZookeeperServer.class
 cluster/ClusterUserClient.class
 cluster/Node$NodeWatcher.class

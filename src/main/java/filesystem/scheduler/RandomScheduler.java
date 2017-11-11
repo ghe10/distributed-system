@@ -1,33 +1,52 @@
 package filesystem.scheduler;
 
-import cluster.Node;
-import filesystem.serializablemodels.FileStorageDataModel;
-
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Random;
 
 public class RandomScheduler {
-    private Node node;
-    private Hashtable<String, FileStorageDataModel> storageInfo;
     private Random random;
 
-    public RandomScheduler(Node node, Hashtable<String, FileStorageDataModel> storageInfo) {
-        this.node = node;
-        this.storageInfo = storageInfo;
+    public RandomScheduler() {
         random = new Random();
     }
 
-    public String randomSchedule(HashSet<String> candidates, HashSet<String> used) {
-        if (used != null) {
-            candidates.removeAll(used);
-        }
-        if (candidates.size() <= 0) {
-            return null;
-        }
+    private String randomCandidate(HashSet<String> candidates) {
         ArrayList<String> candidateList = new ArrayList<String>(candidates);
         int length = candidateList.size();
         return  candidateList.get(random.nextInt(length));
+    }
+
+    public String randomSchedule(HashSet<String> candidates, HashSet<String> used) {
+        if (candidates == null) {
+            return null;
+        }
+        if (used != null) {
+            candidates.removeAll(used);
+        }
+        if (candidates.size() == 0) {
+            return null;
+        }
+        return randomCandidate(candidates);
+    }
+
+    public HashSet<String> randomSchedule(HashSet<String> candidates, HashSet<String> used,
+                                          int requestedNodes) {
+        HashSet<String> results = new HashSet<String>();
+        if (candidates == null) {
+            return null;
+        }
+        if (used != null) {
+            candidates.removeAll(used);
+        }
+        if (candidates.size() < requestedNodes) {
+            return null;
+        }
+        for (int i = 0; i < requestedNodes; i++) {
+            String nodeIp = randomCandidate(candidates);
+            candidates.remove(nodeIp);
+            results.add(nodeIp);
+        }
+        return results;
     }
 }

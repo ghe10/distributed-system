@@ -1,4 +1,5 @@
 utils/ObserveTest.class
+filesystem/scheduler/RandomSchedulerTest.class
 cluster/NodeTest.class
 utils/ObservableListTest.class
 filesystem/FileSystemThreadPoolTest.class
