@@ -6,8 +6,12 @@
 /home/ghe10/ghe10/distributed_system/DS/src/main/java/utils/ObservableList.java
 /home/ghe10/ghe10/distributed_system/DS/src/main/java/utils/FileSystemConstants.java
 /home/ghe10/ghe10/distributed_system/DS/src/main/java/cluster/BasicObserver.java
+/home/ghe10/ghe10/distributed_system/DS/src/main/java/filesystem/filesystemtasks/FileOperationTask.java
 /home/ghe10/ghe10/distributed_system/DS/src/main/java/filesystem/FileSystemThreadPool.java
 /home/ghe10/ghe10/distributed_system/DS/src/main/java/zookeeperserver/ZookeeperServer.java
 /home/ghe10/ghe10/distributed_system/DS/src/main/java/utils/StaticUtils.java
+/home/ghe10/ghe10/distributed_system/DS/src/main/java/filesystem/RemoteClasses/FileSystemOperationInterface.java
 /home/ghe10/ghe10/distributed_system/DS/src/main/java/filesystem/FileSystemWrapper.java
+/home/ghe10/ghe10/distributed_system/DS/src/main/java/filesystem/RemoteClasses/FileSystemOperation.java
 /home/ghe10/ghe10/distributed_system/DS/src/main/java/cluster/Node.java
+/home/ghe10/ghe10/distributed_system/DS/src/main/java/filesystem/serializablemodels/RmiCommunicationDataModel.java
