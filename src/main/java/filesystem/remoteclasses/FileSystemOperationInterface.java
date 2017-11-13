@@ -1,4 +1,4 @@
-package filesystem.RemoteClasses;
+package filesystem.remoteclasses;
 
 import filesystem.serializablemodels.RmiCommunicationDataModel;
 
@@ -6,5 +6,5 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 public interface FileSystemOperationInterface extends Remote {
-    public boolean operation(RmiCommunicationDataModel rmiCommunicationDataModel) throws RemoteException;
+    boolean operation(RmiCommunicationDataModel rmiCommunicationDataModel) throws RemoteException;
 }

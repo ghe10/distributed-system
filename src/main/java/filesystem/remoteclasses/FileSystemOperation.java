@@ -1,25 +1,30 @@
-package filesystem.RemoteClasses;
+package filesystem.remoteclasses;
 
+import cluster.ClusterNodeWrapper;
 import filesystem.FileSystemThreadPool;
 import filesystem.filesystemtasks.FileOperationTask;
+import filesystem.scheduler.RandomScheduler;
 import filesystem.serializablemodels.RmiCommunicationDataModel;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
-public class FileSystemOperation extends UnicastRemoteObject implements FileSystemOperationInterface {
+public class FileSystemOperation extends UnicastRemoteObject
+        implements filesystem.remoteclasses.FileSystemOperationInterface {
     //private RmiCommunicationDataModel rmiCommunicationDataModel;
     private FileSystemThreadPool fileSystemThreadPool;
-    private FileOperationTask task;
+    private RandomScheduler scheduler;
+    private ClusterNodeWrapper node;
 
-    public FileSystemOperation(RmiCommunicationDataModel rmiCommunicationDataModel,
-                               FileSystemThreadPool fileSystemThreadPool) throws RemoteException {
+    public FileSystemOperation(FileSystemThreadPool fileSystemThreadPool, RandomScheduler scheduler, ClusterNodeWrapper node) throws RemoteException {
         //this.rmiCommunicationDataModel = rmiCommunicationDataModel;
         this.fileSystemThreadPool = fileSystemThreadPool;
+        this.scheduler = scheduler;
+        this.node = node;
     }
 
     public boolean operation(RmiCommunicationDataModel rmiCommunicationDataModel) throws RemoteException {
-        task = new FileOperationTask(rmiCommunicationDataModel);
+        FileOperationTask task = new FileOperationTask(rmiCommunicationDataModel, scheduler, node);
         fileSystemThreadPool.addTask(task);
         // TODO: do sth to check if the task finishes
         /**
@@ -28,6 +33,9 @@ public class FileSystemOperation extends UnicastRemoteObject implements FileSyst
          * The observer should be part of the task runnable
          *
          * Maybe wait-notify is enough
+         *
+         * Now we are sync on local variables. Even if multiple concurrent calls on this remote object, there won't be
+         * a problem about task wait
          */
         synchronized (task) {
             try {
