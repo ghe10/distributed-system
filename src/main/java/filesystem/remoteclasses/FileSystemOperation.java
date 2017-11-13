@@ -4,10 +4,12 @@ import cluster.ClusterNodeWrapper;
 import filesystem.FileSystemThreadPool;
 import filesystem.filesystemtasks.FileOperationTask;
 import filesystem.scheduler.RandomScheduler;
+import filesystem.serializablemodels.FileStorageDataModel;
 import filesystem.serializablemodels.RmiCommunicationDataModel;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Hashtable;
 
 public class FileSystemOperation extends UnicastRemoteObject
         implements filesystem.remoteclasses.FileSystemOperationInterface {
@@ -15,16 +17,20 @@ public class FileSystemOperation extends UnicastRemoteObject
     private FileSystemThreadPool fileSystemThreadPool;
     private RandomScheduler scheduler;
     private ClusterNodeWrapper node;
+    private Hashtable<String, FileStorageDataModel> storageInfo;
 
-    public FileSystemOperation(FileSystemThreadPool fileSystemThreadPool, RandomScheduler scheduler, ClusterNodeWrapper node) throws RemoteException {
+    public FileSystemOperation(FileSystemThreadPool fileSystemThreadPool, RandomScheduler scheduler,
+                               ClusterNodeWrapper node, Hashtable<String, FileStorageDataModel> storageInfo)
+            throws RemoteException {
         //this.rmiCommunicationDataModel = rmiCommunicationDataModel;
         this.fileSystemThreadPool = fileSystemThreadPool;
         this.scheduler = scheduler;
         this.node = node;
+        this.storageInfo = storageInfo;
     }
 
     public boolean operation(RmiCommunicationDataModel rmiCommunicationDataModel) throws RemoteException {
-        FileOperationTask task = new FileOperationTask(rmiCommunicationDataModel, scheduler, node);
+        FileOperationTask task = new FileOperationTask(rmiCommunicationDataModel, scheduler, node, storageInfo);
         fileSystemThreadPool.addTask(task);
         // TODO: do sth to check if the task finishes
         /**
@@ -45,6 +51,14 @@ public class FileSystemOperation extends UnicastRemoteObject
                 return false;
             }
         }
+        return true;
+    }
+
+    public boolean taskOperation() throws RemoteException {
+        // this method is used in communication between different cluster storage nodes in our tasks,
+        // no new task created in this function
+
+
         return true;
     }
 }

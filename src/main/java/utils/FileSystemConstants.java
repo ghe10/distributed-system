@@ -1,7 +1,11 @@
 package utils;
 
 public enum FileSystemConstants {
-    NO_MAIN_REPLICA("no_main_replica");
+    NO_MAIN_REPLICA("no_main_replica"),
+    REPLICA_NUMBER("2"),
+
+    TEMP_FILE_FOLDER("tmp"),
+    MAIN_FILE_FOLDER("main");
 
     private String value;
 

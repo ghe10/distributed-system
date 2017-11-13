@@ -2,22 +2,40 @@ package filesystem.filesystemtasks;
 
 import cluster.ClusterNodeWrapper;
 import filesystem.scheduler.RandomScheduler;
+import filesystem.serializablemodels.FileStorageDataModel;
 import filesystem.serializablemodels.RmiCommunicationDataModel;
+import utils.FileSystemConstants;
+import utils.StaticUtils;
+
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Hashtable;
 
 /**
  * This class serves as task wrapper. Note that other RMIs may be called in this task.
- * In this version, all the operations
+ * In this version, all the operations are sequential
  */
 public class FileOperationTask implements Runnable {
     private RmiCommunicationDataModel rmiCommunicationDataModel;
     private RandomScheduler scheduler;
     private ClusterNodeWrapper node;
+    private Hashtable<String, FileStorageDataModel> storageInfo;
+    private boolean succeed;
 
     public FileOperationTask(RmiCommunicationDataModel rmiCommunicationDataModel,
-                             RandomScheduler scheduler, ClusterNodeWrapper node) {
+                             RandomScheduler scheduler, ClusterNodeWrapper node,
+                             Hashtable<String, FileStorageDataModel> storageInfo) {
         this.rmiCommunicationDataModel = rmiCommunicationDataModel;
         this.scheduler = scheduler;
         this.node = node;
+        this.storageInfo = storageInfo;
+        succeed = false;
     }
 
     public void run() {
@@ -33,6 +51,60 @@ public class FileOperationTask implements Runnable {
         synchronized (this) {
             // notify the waiting RMI function to return
             this.notify();
+        }
+    }
+
+    private void addMain(String sourceName, String targetName) {
+        // file transmission is done before this add operation
+        // this function should invoke the RMI for other replicas
+        try {
+            addLocal(sourceName, targetName);
+            String myIp = StaticUtils.getLocalIp();
+            HashSet<String> replicas = scheduler.randomSchedule(node.getNodeIps(),
+                    new HashSet<String>(Arrays.asList(myIp)),
+                    Integer.parseInt(FileSystemConstants.REPLICA_NUMBER.getValue()));
+            for (String replicaIp : replicas) {
+                // TODO : send file to destination
+                succeed = true;
+            }
+            replicas.add(myIp);
+            FileStorageDataModel fileStorageDataModel = new FileStorageDataModel(targetName, myIp, replicas);
+            replicas.remove(myIp);
+            for (String replicaIp : replicas) {
+                // TODO: RMI call with fileStorageDataModel as parameter
+                succeed = true;
+            }
+        } catch(UnknownHostException exception) {
+            succeed = false;
+        }
+    }
+
+    private void addLocal(String sourceName, String targetName) {
+        Path source = Paths.get(String.format("%s/%s",
+                FileSystemConstants.TEMP_FILE_FOLDER.getValue(), sourceName));
+        Path target = Paths.get(String.format("%s/%s", FileSystemConstants.MAIN_FILE_FOLDER.getValue(), targetName));
+        try {
+            Files.copy(source, target, StandardCopyOption.ATOMIC_MOVE);
+        } catch (IOException exception) {
+            exception.printStackTrace();
+            succeed = false;
+        }
+    }
+
+    private void delete(String targetName) {
+        Path target = Paths.get(String.format("%s/%s", FileSystemConstants.MAIN_FILE_FOLDER.getValue(), targetName));
+        try {
+            String myIp = StaticUtils.getLocalIp();
+            if (storageInfo.get(targetName).getMainReplicaIp().equals(myIp)) {
+                // TODO: invoke new RMI and tell others to delete
+            }
+            Files.delete(target);
+            synchronized (storageInfo) {
+                storageInfo.remove(targetName);
+            }
+        } catch (IOException exception) {
+            exception.printStackTrace();
+            succeed = false;
         }
     }
 }
