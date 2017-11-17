@@ -3,14 +3,20 @@ package filesystem.remoteclasses;
 import cluster.ClusterNodeWrapper;
 import filesystem.FileSystemThreadPool;
 import filesystem.filesystemtasks.FileOperationTask;
+import filesystem.filesystemtasks.OperationConstants;
 import filesystem.scheduler.RandomScheduler;
 import filesystem.serializablemodels.FileStorageDataModel;
 import filesystem.serializablemodels.RmiCommunicationDataModel;
+import utils.FileSystemConstants;
 
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Hashtable;
 
+/**
+ * When we start the server, we can add parameters during bind.
+ */
 public class FileSystemOperation extends UnicastRemoteObject
         implements filesystem.remoteclasses.FileSystemOperationInterface {
     //private RmiCommunicationDataModel rmiCommunicationDataModel;
@@ -54,11 +60,16 @@ public class FileSystemOperation extends UnicastRemoteObject
         return true;
     }
 
-    public boolean taskOperation() throws RemoteException {
-        // this method is used in communication between different cluster storage nodes in our tasks,
-        // no new task created in this function
-
-
-        return true;
+    /**
+     * This function is defined for replica info add only, i.e. pass the file storage data model to remote
+     */
+    public boolean replicaAddOperation(FileStorageDataModel fileStorageDataModel) throws RemoteException {
+        if (fileStorageDataModel == null) {
+            return false;
+        }
+        synchronized (storageInfo) {
+            storageInfo.put(fileStorageDataModel.getFileName(), fileStorageDataModel);
+            return true;
+        }
     }
 }

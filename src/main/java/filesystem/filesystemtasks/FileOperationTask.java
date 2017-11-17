@@ -1,6 +1,7 @@
 package filesystem.filesystemtasks;
 
 import cluster.ClusterNodeWrapper;
+import filesystem.remoteclasses.FileSystemOperationInterface;
 import filesystem.scheduler.RandomScheduler;
 import filesystem.serializablemodels.FileStorageDataModel;
 import filesystem.serializablemodels.RmiCommunicationDataModel;
@@ -8,11 +9,15 @@ import utils.FileSystemConstants;
 import utils.StaticUtils;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -23,6 +28,7 @@ import java.util.Hashtable;
  */
 public class FileOperationTask implements Runnable {
     private RmiCommunicationDataModel rmiCommunicationDataModel;
+    //private FileStorageDataModel fileStorageDataModel;
     private RandomScheduler scheduler;
     private ClusterNodeWrapper node;
     private Hashtable<String, FileStorageDataModel> storageInfo;
@@ -37,6 +43,18 @@ public class FileOperationTask implements Runnable {
         this.storageInfo = storageInfo;
         succeed = false;
     }
+
+//    public FileOperationTask(RmiCommunicationDataModel rmiCommunicationDataModel,
+//                             FileStorageDataModel fileStorageDataModel,
+//                             RandomScheduler scheduler, ClusterNodeWrapper node,
+//                             Hashtable<String, FileStorageDataModel> storageInfo) {
+//        this.rmiCommunicationDataModel = rmiCommunicationDataModel;
+//        this.fileStorageDataModel = fileStorageDataModel;
+//        this.scheduler = scheduler;
+//        this.node = node;
+//        this.storageInfo = storageInfo;
+//        succeed = false;
+//    }
 
     public void run() {
         if (rmiCommunicationDataModel.getOperation().equals(OperationConstants.ADD_MAIN.getValue())) {
@@ -58,7 +76,7 @@ public class FileOperationTask implements Runnable {
         // file transmission is done before this add operation
         // this function should invoke the RMI for other replicas
         try {
-            addLocal(sourceName, targetName);
+            addFileLocal(sourceName, targetName);
             String myIp = StaticUtils.getLocalIp();
             HashSet<String> replicas = scheduler.randomSchedule(node.getNodeIps(),
                     new HashSet<String>(Arrays.asList(myIp)),
@@ -71,20 +89,40 @@ public class FileOperationTask implements Runnable {
             FileStorageDataModel fileStorageDataModel = new FileStorageDataModel(targetName, myIp, replicas);
             replicas.remove(myIp);
             for (String replicaIp : replicas) {
-                // TODO: RMI call with fileStorageDataModel as parameter
-                succeed = true;
+                // TODO: RMI call with file add commands
+
+                FileSystemOperationInterface operation = (FileSystemOperationInterface) Naming.lookup("TEMP_NAME");
+                operation.replicaAddOperation()...../// not yet done
+                // Since we search by accessing main replica, add these file to replica's storage info won't cause
+                // consistent issue in user's point of view, so we can just directly add them when we add file
             }
+            //TODO: another for loop to add storage info to replica nodes
+//            for (String replicaIp : replicas) {
+//                FileSystemOperationInterface operation = (FileSystemOperationInterface) Naming.lookup("TEMP_NAME");
+//                operation.
+//            }
+            synchronized (storageInfo) {
+                storageInfo.put(targetName, fileStorageDataModel);
+            }
+            succeed = true;
         } catch(UnknownHostException exception) {
+            succeed = false;
+        } catch (NotBoundException exception) {
+            succeed = false;
+        } catch (MalformedURLException exception) {
+            succeed = false;
+        } catch (RemoteException exception) {
             succeed = false;
         }
     }
 
-    private void addLocal(String sourceName, String targetName) {
+    private void addFileLocal(String sourceName, String targetName) {
         Path source = Paths.get(String.format("%s/%s",
                 FileSystemConstants.TEMP_FILE_FOLDER.getValue(), sourceName));
         Path target = Paths.get(String.format("%s/%s", FileSystemConstants.MAIN_FILE_FOLDER.getValue(), targetName));
         try {
             Files.copy(source, target, StandardCopyOption.ATOMIC_MOVE);
+            // TODO: the add info part should happen in the RMI all
         } catch (IOException exception) {
             exception.printStackTrace();
             succeed = false;

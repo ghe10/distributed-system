@@ -3,6 +3,9 @@ package filesystem.serializablemodels;
 import java.io.Serializable;
 import java.util.HashSet;
 
+/**
+ * This class implements Serializable for RMI calls
+ */
 public class FileStorageDataModel implements Serializable {
     private String fileName;
     private String mainReplicaIp;
