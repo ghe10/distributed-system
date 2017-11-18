@@ -44,18 +44,6 @@ public class FileOperationTask implements Runnable {
         succeed = false;
     }
 
-//    public FileOperationTask(RmiCommunicationDataModel rmiCommunicationDataModel,
-//                             FileStorageDataModel fileStorageDataModel,
-//                             RandomScheduler scheduler, ClusterNodeWrapper node,
-//                             Hashtable<String, FileStorageDataModel> storageInfo) {
-//        this.rmiCommunicationDataModel = rmiCommunicationDataModel;
-//        this.fileStorageDataModel = fileStorageDataModel;
-//        this.scheduler = scheduler;
-//        this.node = node;
-//        this.storageInfo = storageInfo;
-//        succeed = false;
-//    }
-
     public void run() {
         if (rmiCommunicationDataModel.getOperation().equals(OperationConstants.ADD_MAIN.getValue())) {
             // TODO : this is the main replica, add operation required, a new RMI should be defined for these operations
@@ -66,6 +54,7 @@ public class FileOperationTask implements Runnable {
         } else if (rmiCommunicationDataModel.getOperation().equals(OperationConstants.GET.getValue())) {
             // TODO: add some operation
             // send file
+            System.out.println("Empty file send operation!");
         } else if (rmiCommunicationDataModel.getOperation().equals(OperationConstants.DELETE.getValue())) {
             delete(rmiCommunicationDataModel.getTargetFileName());
         }
@@ -73,6 +62,10 @@ public class FileOperationTask implements Runnable {
             // notify the waiting RMI function to return
             this.notify();
         }
+    }
+
+    public boolean isSucceed() {
+        return succeed;
     }
 
     private void addMain(String sourceName, String targetName) {
@@ -109,7 +102,10 @@ public class FileOperationTask implements Runnable {
             synchronized (storageInfo) {
                 storageInfo.put(targetName, fileStorageDataModel);
             }
-            succeed = true;
+            // add info to master
+            if (changeMasterInfo(targetName, fileStorageDataModel)) {
+                succeed = true;
+            }
         } catch(UnknownHostException exception) {
             succeed = false;
         } catch (NotBoundException exception) {
@@ -157,12 +153,33 @@ public class FileOperationTask implements Runnable {
                 }
             }
             Files.delete(target);
+            if (changeMasterInfo(targetName, null)) {
+                succeed = true;
+            }
         } catch (IOException exception) {
             exception.printStackTrace();
             succeed = false;
         } catch (NotBoundException exception) {
             exception.printStackTrace();
             succeed = false;
+        }
+    }
+
+    private boolean changeMasterInfo(String name, FileStorageDataModel fileStorageDataModel) {
+        try {
+            FileSystemOperationInterface operationInterface =
+                    (FileSystemOperationInterface) Naming.lookup("TEMP_NAME");
+            operationInterface.changeMasterStorageInfoOperation(name, fileStorageDataModel);
+            return true;
+        } catch (RemoteException exception) {
+            exception.printStackTrace();
+            return false;
+        } catch (NotBoundException exception) {
+            exception.printStackTrace();
+            return false;
+        } catch (MalformedURLException exception) {
+            exception.printStackTrace();
+            return false;
         }
     }
 }

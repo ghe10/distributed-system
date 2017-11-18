@@ -92,4 +92,15 @@ public class FileSystemOperation extends UnicastRemoteObject
             return true;
         }
     }
+
+    public void changeMasterStorageInfoOperation(String fileName,
+                                                    FileStorageDataModel fileStorageDataModel) throws RemoteException {
+        if (fileStorageDataModel == null) {
+            synchronized (storageInfo) {
+                storageInfo.remove(fileName);
+            }
+        } else {
+            storageInfo.put(fileName, fileStorageDataModel);
+        }
+    }
 }

@@ -11,4 +11,7 @@ public interface FileSystemOperationInterface extends Remote {
 
     boolean replicaAddOperation(RmiCommunicationDataModel rmiCommunicationDataModel,
                              FileStorageDataModel fileStorageDataModel) throws RemoteException;
+
+    void changeMasterStorageInfoOperation(String fileName, FileStorageDataModel fileStorageDataModel)
+            throws RemoteException;
 }
