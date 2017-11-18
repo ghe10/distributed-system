@@ -160,6 +160,9 @@ public class FileOperationTask implements Runnable {
         } catch (IOException exception) {
             exception.printStackTrace();
             succeed = false;
+        } catch (NotBoundException exception) {
+            exception.printStackTrace();
+            succeed = false;
         }
     }
 }
