@@ -59,12 +59,15 @@ public class FileOperationTask implements Runnable {
     public void run() {
         if (rmiCommunicationDataModel.getOperation().equals(OperationConstants.ADD_MAIN.getValue())) {
             // TODO : this is the main replica, add operation required, a new RMI should be defined for these operations
+            addMain(rmiCommunicationDataModel.getSourceFileName(), rmiCommunicationDataModel.getTargetFileName());
         } else if (rmiCommunicationDataModel.getOperation().equals(OperationConstants.ADD.getValue())) {
             // this is just a replica
+            addFileLocal(rmiCommunicationDataModel.getSourceFileName(), rmiCommunicationDataModel.getTargetFileName());
         } else if (rmiCommunicationDataModel.getOperation().equals(OperationConstants.GET.getValue())) {
-
+            // TODO: add some operation
+            // send file
         } else if (rmiCommunicationDataModel.getOperation().equals(OperationConstants.DELETE.getValue())) {
-
+            delete(rmiCommunicationDataModel.getTargetFileName());
         }
         synchronized (this) {
             // notify the waiting RMI function to return
@@ -92,11 +95,13 @@ public class FileOperationTask implements Runnable {
                 // TODO: RMI call with file add commands
 
                 FileSystemOperationInterface operation = (FileSystemOperationInterface) Naming.lookup("TEMP_NAME");
-                operation.replicaAddOperation()...../// not yet done
+                RmiCommunicationDataModel rmiCommunicationDataModel = new RmiCommunicationDataModel(targetName,
+                        sourceName, OperationConstants.ADD.getValue(), myIp);
+                operation.replicaAddOperation(rmiCommunicationDataModel, fileStorageDataModel);
                 // Since we search by accessing main replica, add these file to replica's storage info won't cause
                 // consistent issue in user's point of view, so we can just directly add them when we add file
             }
-            //TODO: another for loop to add storage info to replica nodes
+            //This to do is no more required. TO DO: another for loop to add storage info to replica nodes
 //            for (String replicaIp : replicas) {
 //                FileSystemOperationInterface operation = (FileSystemOperationInterface) Naming.lookup("TEMP_NAME");
 //                operation.
@@ -135,11 +140,23 @@ public class FileOperationTask implements Runnable {
             String myIp = StaticUtils.getLocalIp();
             if (storageInfo.get(targetName).getMainReplicaIp().equals(myIp)) {
                 // TODO: invoke new RMI and tell others to delete
+                HashSet<String> replicas = storageInfo.get(targetName).getReplicaIps();
+                // we delete file from main replica here to avoid consistency problem
+                synchronized (storageInfo) {
+                    storageInfo.remove(targetName);
+                }
+                for (String ip : replicas) {
+                    if (!ip.equals(myIp)) {
+                        // TODO: get remote name with some methods
+                        FileSystemOperationInterface operation =
+                                (FileSystemOperationInterface) Naming.lookup("TEMP_NAME");
+                        RmiCommunicationDataModel rmiCommunicationDataModel = new RmiCommunicationDataModel(targetName,
+                                targetName, OperationConstants.DELETE.getValue(), myIp);
+                        operation.operation(rmiCommunicationDataModel);
+                    }
+                }
             }
             Files.delete(target);
-            synchronized (storageInfo) {
-                storageInfo.remove(targetName);
-            }
         } catch (IOException exception) {
             exception.printStackTrace();
             succeed = false;

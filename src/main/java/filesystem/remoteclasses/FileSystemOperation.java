@@ -19,7 +19,6 @@ import java.util.Hashtable;
  */
 public class FileSystemOperation extends UnicastRemoteObject
         implements filesystem.remoteclasses.FileSystemOperationInterface {
-    //private RmiCommunicationDataModel rmiCommunicationDataModel;
     private FileSystemThreadPool fileSystemThreadPool;
     private RandomScheduler scheduler;
     private ClusterNodeWrapper node;
@@ -28,7 +27,6 @@ public class FileSystemOperation extends UnicastRemoteObject
     public FileSystemOperation(FileSystemThreadPool fileSystemThreadPool, RandomScheduler scheduler,
                                ClusterNodeWrapper node, Hashtable<String, FileStorageDataModel> storageInfo)
             throws RemoteException {
-        //this.rmiCommunicationDataModel = rmiCommunicationDataModel;
         this.fileSystemThreadPool = fileSystemThreadPool;
         this.scheduler = scheduler;
         this.node = node;
@@ -63,9 +61,31 @@ public class FileSystemOperation extends UnicastRemoteObject
     /**
      * This function is defined for replica info add only, i.e. pass the file storage data model to remote
      */
-    public boolean replicaAddOperation(FileStorageDataModel fileStorageDataModel) throws RemoteException {
+    public boolean replicaAddOperation(RmiCommunicationDataModel rmiCommunicationDataModel,
+                                       FileStorageDataModel fileStorageDataModel) throws RemoteException {
         if (fileStorageDataModel == null) {
             return false;
+        }
+        FileOperationTask task = new FileOperationTask(rmiCommunicationDataModel, scheduler, node, storageInfo);
+        fileSystemThreadPool.addTask(task);
+        // TODO: do sth to check if the task finishes
+        /**
+         * may be we can use protected void afterExecute(Runnable r,
+         * Throwable t) and instance of along with an observer to do this job
+         * The observer should be part of the task runnable
+         *
+         * Maybe wait-notify is enough
+         *
+         * Now we are sync on local variables. Even if multiple concurrent calls on this remote object, there won't be
+         * a problem about task wait
+         */
+        synchronized (task) {
+            try {
+                task.wait();
+            } catch (InterruptedException exception) {
+                exception.printStackTrace();
+                return false;
+            }
         }
         synchronized (storageInfo) {
             storageInfo.put(fileStorageDataModel.getFileName(), fileStorageDataModel);
