@@ -5,7 +5,9 @@ public enum FileSystemConstants {
     REPLICA_NUMBER("2"),
 
     TEMP_FILE_FOLDER("tmp"),
-    MAIN_FILE_FOLDER("main");
+    MAIN_FILE_FOLDER("main"),
+
+    SHUT_DOWN("shut_down");
 
     private String value;
 

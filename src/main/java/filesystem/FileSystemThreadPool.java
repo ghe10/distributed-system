@@ -23,4 +23,11 @@ public class FileSystemThreadPool {
     public void addTask(Runnable task) {
         threadPoolExecutor.execute(task);
     }
+
+    public void shutDown() throws InterruptedException {
+        threadPoolExecutor.shutdown();
+        while (!threadPoolExecutor.isTerminated()) {
+            Thread.sleep(100L);
+        }
+    }
 }

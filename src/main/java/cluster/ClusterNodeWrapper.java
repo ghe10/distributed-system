@@ -36,4 +36,8 @@ public class ClusterNodeWrapper {
     public boolean isMaster() {
         return node.isMaster();
     }
+
+    public void shutDown() throws InterruptedException {
+        zooKeeper.close();
+    }
 }
