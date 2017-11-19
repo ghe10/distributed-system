@@ -5,7 +5,9 @@ public enum OperationConstants {
     ADD_MAIN("add_main"),
     GET("get"),
     DELETE("delete"),
-    APPEND("append");
+    APPEND("append"),
+
+    LISTEN_PORT("2048");
 
     private String value;
 

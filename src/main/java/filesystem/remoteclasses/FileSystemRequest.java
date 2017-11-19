@@ -5,6 +5,7 @@ import filesystem.scheduler.RandomScheduler;
 import filesystem.serializablemodels.FileStorageDataModel;
 
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.HashSet;
 import java.util.Hashtable;
 
@@ -13,13 +14,14 @@ import java.util.Hashtable;
  * 1. Get main replica ip
  * 2. Schedule a new main replica ip
  */
-public class FileSystemRequest implements FileSystemRequestInterface {
+public class FileSystemRequest extends UnicastRemoteObject
+        implements FileSystemRequestInterface {
     private Hashtable<String, FileStorageDataModel> storageInfo;
     private RandomScheduler scheduler;
     private ClusterNodeWrapper node;
 
     public FileSystemRequest(RandomScheduler scheduler, ClusterNodeWrapper node,
-                             Hashtable<String, FileStorageDataModel> storageInfo) {
+                             Hashtable<String, FileStorageDataModel> storageInfo) throws RemoteException {
         this.scheduler = scheduler;
         this.storageInfo = storageInfo;
         this.node = node;

@@ -1,6 +1,7 @@
 package filesystem.filesystemtasks;
 
 import cluster.ClusterNodeWrapper;
+import filesystem.remoteclasses.FileSystemOperation;
 import filesystem.remoteclasses.FileSystemOperationInterface;
 import filesystem.scheduler.RandomScheduler;
 import filesystem.serializablemodels.FileStorageDataModel;
@@ -18,6 +19,8 @@ import java.nio.file.StandardCopyOption;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -68,6 +71,16 @@ public class FileOperationTask implements Runnable {
         return succeed;
     }
 
+    private void addReplica(String replicaIp, String targetName, String sourceName, String myIp,
+                               FileStorageDataModel fileStorageDataModel) throws RemoteException, NotBoundException {
+        Registry registry = LocateRegistry.getRegistry(replicaIp,
+                Integer.parseInt(OperationConstants.LISTEN_PORT.getValue()));
+        FileSystemOperationInterface operation = (FileSystemOperationInterface) registry.lookup(FileSystemOperation.class.getName());
+        RmiCommunicationDataModel rmiCommunicationDataModel = new RmiCommunicationDataModel(targetName,
+                sourceName, OperationConstants.ADD.getValue(), myIp);
+        operation.replicaAddOperation(rmiCommunicationDataModel, fileStorageDataModel);
+    }
+
     private void addMain(String sourceName, String targetName) {
         // file transmission is done before this add operation
         // this function should invoke the RMI for other replicas
@@ -79,26 +92,16 @@ public class FileOperationTask implements Runnable {
                     Integer.parseInt(FileSystemConstants.REPLICA_NUMBER.getValue()));
             for (String replicaIp : replicas) {
                 // TODO : send file to destination
-                succeed = true;
             }
             replicas.add(myIp);
             FileStorageDataModel fileStorageDataModel = new FileStorageDataModel(targetName, myIp, replicas);
             replicas.remove(myIp);
             for (String replicaIp : replicas) {
-                // TODO: RMI call with file add commands
-
-                FileSystemOperationInterface operation = (FileSystemOperationInterface) Naming.lookup("TEMP_NAME");
-                RmiCommunicationDataModel rmiCommunicationDataModel = new RmiCommunicationDataModel(targetName,
-                        sourceName, OperationConstants.ADD.getValue(), myIp);
-                operation.replicaAddOperation(rmiCommunicationDataModel, fileStorageDataModel);
+                addReplica(replicaIp, targetName, sourceName, myIp, fileStorageDataModel);
                 // Since we search by accessing main replica, add these file to replica's storage info won't cause
                 // consistent issue in user's point of view, so we can just directly add them when we add file
             }
             //This to do is no more required. TO DO: another for loop to add storage info to replica nodes
-//            for (String replicaIp : replicas) {
-//                FileSystemOperationInterface operation = (FileSystemOperationInterface) Naming.lookup("TEMP_NAME");
-//                operation.
-//            }
             synchronized (storageInfo) {
                 storageInfo.put(targetName, fileStorageDataModel);
             }
@@ -109,8 +112,6 @@ public class FileOperationTask implements Runnable {
         } catch(UnknownHostException exception) {
             succeed = false;
         } catch (NotBoundException exception) {
-            succeed = false;
-        } catch (MalformedURLException exception) {
             succeed = false;
         } catch (RemoteException exception) {
             succeed = false;
@@ -141,11 +142,13 @@ public class FileOperationTask implements Runnable {
                 synchronized (storageInfo) {
                     storageInfo.remove(targetName);
                 }
-                for (String ip : replicas) {
-                    if (!ip.equals(myIp)) {
+                for (String replicaIp : replicas) {
+                    if (!replicaIp.equals(myIp)) {
                         // TODO: get remote name with some methods
+                        Registry registry = LocateRegistry.getRegistry(replicaIp,
+                                Integer.parseInt(OperationConstants.LISTEN_PORT.getValue()));
                         FileSystemOperationInterface operation =
-                                (FileSystemOperationInterface) Naming.lookup("TEMP_NAME");
+                                (FileSystemOperationInterface) registry.lookup(FileSystemOperation.class.getName());
                         RmiCommunicationDataModel rmiCommunicationDataModel = new RmiCommunicationDataModel(targetName,
                                 targetName, OperationConstants.DELETE.getValue(), myIp);
                         operation.operation(rmiCommunicationDataModel);

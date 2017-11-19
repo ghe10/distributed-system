@@ -9,6 +9,7 @@
 /home/ghe10/ghe10/distributed_system/DS/src/main/java/filesystem/remoteclasses/FileSystemRequest.java
 /home/ghe10/ghe10/distributed_system/DS/src/main/java/filesystem/remoteclasses/FileSystemRequestInterface.java
 /home/ghe10/ghe10/distributed_system/DS/src/main/java/cluster/BasicObserver.java
+/home/ghe10/ghe10/distributed_system/DS/src/main/java/filesystem/remoteclasses/RmiServer.java
 /home/ghe10/ghe10/distributed_system/DS/src/main/java/filesystem/filesystemtasks/FileOperationTask.java
 /home/ghe10/ghe10/distributed_system/DS/src/main/java/filesystem/FileSystemThreadPool.java
 /home/ghe10/ghe10/distributed_system/DS/src/main/java/zookeeperserver/ZookeeperServer.java

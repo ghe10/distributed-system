@@ -16,6 +16,7 @@ utils/StaticUtils.class
 cluster/Node$3.class
 filesystem/filesystemtasks/OperationConstants.class
 cluster/Node$1.class
+filesystem/remoteclasses/RmiServer.class
 filesystem/FileSystemWrapper.class
 filesystem/remoteclasses/FileSystemOperation.class
 cluster/ClusterNodeWrapper.class
