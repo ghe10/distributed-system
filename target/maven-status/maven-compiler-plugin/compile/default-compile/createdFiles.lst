@@ -1,5 +1,5 @@
-cluster/Node$2.class
 filesystem/FileSystemThreadPool.class
+cluster/Node$2.class
 filesystem/filesystemtasks/FileOperationTask.class
 cluster/BasicObserver.class
 filesystem/serializablemodels/RmiCommunicationDataModel.class
@@ -16,8 +16,8 @@ filesystem/remoteclasses/FileSystemOperationInterface.class
 utils/StaticUtils.class
 cluster/Node$3.class
 filesystem/filesystemtasks/OperationConstants.class
-cluster/Node$1.class
 filesystem/remoteclasses/RmiServer.class
+cluster/Node$1.class
 filesystem/FileSystemWrapper.class
 filesystem/remoteclasses/FileSystemOperation.class
 cluster/ClusterNodeWrapper.class
