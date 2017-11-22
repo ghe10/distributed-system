@@ -13,7 +13,7 @@ import java.util.Scanner;
  * This class provides main method for the cluster part. The purpose of this class is test
  */
 public class ClusterUserClient {
-    private static final String HOST_PORT = "3888";
+    private static final String HOST_PORT = "2181";
     private static final int SESSION_TIMEOUT = -1;
     private static final String QUIT = "quit";
     private static final String GET_MASTER = "get-master";
@@ -40,6 +40,7 @@ public class ClusterUserClient {
                 System.out.println("");
             } else {
                 System.out.println("Invalid input !");
+                System.out.println("Possible commands are : \n\tget-master\n\tget-nodes");
             }
         }
     }

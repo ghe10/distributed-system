@@ -5,6 +5,7 @@ cluster/BasicObserver.class
 filesystem/serializablemodels/RmiCommunicationDataModel.class
 filesystem/serializablemodels/FileStorageDataModel.class
 filesystem/remoteclasses/FileSystemRequestInterface.class
+filesystem/remoteclasses/RmiClient.class
 utils/ObservableList.class
 filesystem/remoteclasses/FileSystemRequest.class
 cluster/Node$MasterWatcher.class

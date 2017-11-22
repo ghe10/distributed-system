@@ -13,6 +13,7 @@
 /home/ghe10/ghe10/distributed_system/DS/src/main/java/filesystem/filesystemtasks/FileOperationTask.java
 /home/ghe10/ghe10/distributed_system/DS/src/main/java/filesystem/FileSystemThreadPool.java
 /home/ghe10/ghe10/distributed_system/DS/src/main/java/zookeeperserver/ZookeeperServer.java
+/home/ghe10/ghe10/distributed_system/DS/src/main/java/filesystem/remoteclasses/RmiClient.java
 /home/ghe10/ghe10/distributed_system/DS/src/main/java/filesystem/remoteclasses/FileSystemOperation.java
 /home/ghe10/ghe10/distributed_system/DS/src/main/java/utils/StaticUtils.java
 /home/ghe10/ghe10/distributed_system/DS/src/main/java/filesystem/FileSystemWrapper.java

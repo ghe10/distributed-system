@@ -5,6 +5,7 @@ import org.apache.zookeeper.server.quorum.QuorumPeerConfig;
 import org.apache.zookeeper.server.quorum.QuorumPeerMain;
 import org.apache.zookeeper.server.quorum.QuorumStats;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -70,17 +71,18 @@ public class ZookeeperServer extends QuorumPeerMain implements Runnable {
 
         Scanner scanner = new Scanner(System.in);
         String input = "";
-        /*
+
         File folder = new File(".");
-        File[] listOfFiles = folder.listFiles();
-        for (int i = 0; i < listOfFiles.length; i++) {
-            if (listOfFiles[i].isFile()) {
-                System.out.println("File " + listOfFiles[i].getName());
-            } else if (listOfFiles[i].isDirectory()) {
-                System.out.println("Directory " + listOfFiles[i].getName());
-            }
-        }
-        */
+        System.out.println(folder.getAbsolutePath());
+//        File[] listOfFiles = folder..listFiles();
+//        for (int i = 0; i < listOfFiles.length; i++) {
+//            if (listOfFiles[i].isFile()) {
+//                System.out.println("File " + listOfFiles[i].getName());
+//            } else if (listOfFiles[i].isDirectory()) {
+//                System.out.println("Directory " + listOfFiles[i].getName());
+//            }
+//        }
+
         ZookeeperServer server = new ZookeeperServer("config/configuration.cfg");
         Thread t = new Thread(server);
         t.start();
