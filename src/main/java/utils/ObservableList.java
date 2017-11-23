@@ -21,7 +21,7 @@ public class ObservableList<T> extends Observable {
         synchronized (deadEventQueue) {
             result = deadEventQueue.add(data);
             setChanged();
-            notifyObservers();
+            notifyObservers(data);
         }
         return result;
     }

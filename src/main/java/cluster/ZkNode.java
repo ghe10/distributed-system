@@ -99,6 +99,7 @@ public class ZkNode {
         NodeWatcher nodeWatcher = new NodeWatcher();
         znodeSetWatcher(String.format("%s/%s", MASTER_PATH, MASTER_NAME), masterWatcher);
         znodeSetWatcher(NODE_PATH, nodeWatcher);
+        currentNodes = getNodeIps();
     }
 
     private class NodeWatcher implements Watcher {
@@ -108,14 +109,15 @@ public class ZkNode {
                 if (event.getType().equals(Event.EventType.NodeChildrenChanged)) {
                     System.out.println("Start update process");
                     HashSet<String> newNodes = getNodeIps();
+                    System.out.println("get ips");
                     currentNodes.removeAll(newNodes);
-                    //synchronized (deadEventQueue) {
-                        System.out.println("Update dead queue");
-                        for (String node : currentNodes) {
-                            System.out.println(node);
-                            deadEventQueue.add(node);
-                        }
-                    //}
+
+                    System.out.println("Update dead queue");
+                    for (String node : currentNodes) {
+                        System.out.println(deadEventQueue.size());
+                        deadEventQueue.add(node);
+                        System.out.println(deadEventQueue.size());
+                    }
                     currentNodes = newNodes;
                 }
                 znodeSetWatcher(NODE_PATH, new NodeWatcher());

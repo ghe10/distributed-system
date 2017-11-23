@@ -8,6 +8,8 @@ import java.util.Observer;
  */
 public class BasicObserver implements Observer {
     public void update(Observable observable, Object object) {
-        System.out.println(String.format("Observed object : %s", object.toString()));
+        //System.out.println(String.format("Observed object :"));
+        System.out.println("update is called");
+        System.out.println((String)object);
     }
 }
