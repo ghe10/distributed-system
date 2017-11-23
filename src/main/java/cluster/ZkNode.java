@@ -95,7 +95,7 @@ public class ZkNode {
 
     private static class NodeWatcher implements Watcher {
         public void process(WatchedEvent event) {
-            System.out.println("NodeWatcher activated!*************" + event.getPath() + " " + event.getType());
+            System.out.println("NodeWatcher activated!!*************" + event.getPath() + " " + event.getType());
         }
     }
 
