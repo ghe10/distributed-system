@@ -13,8 +13,8 @@ import java.util.Scanner;
  * This class provides main method for the cluster part. The purpose of this class is test
  */
 public class ClusterUserClient {
-    private static final String HOST_PORT = "3888";
-    private static final int SESSION_TIMEOUT = -1;
+    private static final String HOST_INFO = "192.168.56.101:2181";
+    private static final int SESSION_TIMEOUT = 60000;
     private static final String QUIT = "quit";
     private static final String GET_MASTER = "get-master";
     private static final String GET_NODES = "get-nodes";
@@ -32,6 +32,10 @@ public class ClusterUserClient {
             } else if (command.equals(GET_NODES)) {
                 System.out.println("Cluster node ip information :");
                 HashSet<String> nodeIps = nodeWrapper.getNodeIps();
+                if (nodeIps == null) {
+                    System.out.println("no node info");
+                    continue;
+                }
                 int count = 0;
                 System.out.println("");
                 for (String ip : nodeIps) {
@@ -40,6 +44,7 @@ public class ClusterUserClient {
                 System.out.println("");
             } else {
                 System.out.println("Invalid input !");
+                System.out.println("Possible commands are : \n\tget-master\n\tget-nodes");
             }
         }
     }
@@ -50,7 +55,7 @@ public class ClusterUserClient {
         Observer observer = new BasicObserver();
         try {
             ClusterNodeWrapper nodeWrapper =
-                    new ClusterNodeWrapper(observableList, observer, HOST_PORT, SESSION_TIMEOUT);
+                    new ClusterNodeWrapper(observableList, observer, HOST_INFO, SESSION_TIMEOUT);
             System.out.println("******** This cluster node is started ! *********");
             // test operations goes here
             commandHandler(nodeWrapper);

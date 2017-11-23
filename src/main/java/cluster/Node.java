@@ -34,10 +34,10 @@ public class Node {
 
     public void initNode() throws InterruptedException, KeeperException {
         // this function will register everything
-        registerNode();
         if (!existMaster()) {
             runForMaster();
         }
+        registerNode();
         masterIp = getZkMasterIp();
         nodeIps = getZkNodeIps();
     }
@@ -97,6 +97,7 @@ public class Node {
                 return false;
             } catch(KeeperException exception) {
                 // do nothing
+                exception.printStackTrace();
                 return false;
             }
         }
@@ -116,6 +117,7 @@ public class Node {
                 break;
             } catch (KeeperException.ConnectionLossException exception) {
                 // do nothing, we should try again
+                exception.printStackTrace();
             } catch (KeeperException exception) {
                 isMaster = false;
                 break;
@@ -183,7 +185,7 @@ public class Node {
         }
         try {
             for (String nodeName : nodeNames) {
-                byte[] data = zooKeeper.getData(String.format("%s%s", NODE_PATH, nodeName), new NodeWatcher(), null);
+                byte[] data = zooKeeper.getData(String.format("%s/%s", NODE_PATH, nodeName), new NodeWatcher(), null);
                 newNodeIps.add(new String(data));
             }
             return newNodeIps;
@@ -239,5 +241,4 @@ public class Node {
             }
         }
     }
-
 }

@@ -17,9 +17,9 @@ public class ClusterNodeWrapper {
     private Node node;
     private ZooKeeper zooKeeper;
 
-    public ClusterNodeWrapper(ObservableList<String> observableList, Observer observer, String hostPort,
+    public ClusterNodeWrapper(ObservableList<String> observableList, Observer observer, String hostInfo,
                               int sessionTimeOut) throws IOException, InterruptedException, KeeperException {
-        zooKeeper = new ZooKeeper(hostPort, sessionTimeOut, null);
+        zooKeeper = new ZooKeeper(hostInfo, sessionTimeOut, null);
         node = new Node(zooKeeper, observableList);
         node.initNode();
         MembershipHandler.setMembershipHandler(observableList, observer);
@@ -35,5 +35,9 @@ public class ClusterNodeWrapper {
 
     public boolean isMaster() {
         return node.isMaster();
+    }
+
+    public void shutDown() throws InterruptedException {
+        zooKeeper.close();
     }
 }
