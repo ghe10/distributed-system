@@ -7,8 +7,8 @@ import org.junit.Test;
 import org.mockito.Matchers;
 import utils.ObservableList;
 
+import java.io.IOException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.LinkedList;
 
 import static org.apache.zookeeper.ZooDefs.Ids.OPEN_ACL_UNSAFE;
@@ -23,19 +23,19 @@ import static org.mockito.Mockito.when;
 public class NodeTest {
     private ObservableList observableList;
     private ZooKeeper zooKeeper;
-    private Node node;
+    private ZkNode node;
     private String localIp;
 
     @Before
-    public void prepare() throws UnknownHostException {
+    public void prepare() throws IOException {
         observableList = mock(ObservableList.class);
         zooKeeper = mock(ZooKeeper.class);
-        node = new Node(zooKeeper, observableList);
+        node = new ZkNode(zooKeeper, observableList);
         localIp = InetAddress.getLocalHost().getHostAddress();
     }
 
     @Test
-    public void initNodeExistMasterTest() throws KeeperException, InterruptedException {
+    public void initNodeExistMasterTest() throws KeeperException, InterruptedException, IOException {
         // mock for register()
         LinkedList<String> nodeList = new LinkedList<String>();
         doNothing().when(zooKeeper).create(
@@ -61,7 +61,9 @@ public class NodeTest {
         //zooKeeper.getChildren(NODE_PATH, false);
         when(zooKeeper.getChildren(anyString(), eq(false))).thenReturn(nodeList);
 
-        node.initNode();
+        when(zooKeeper.exists(anyString(), eq(true))).thenReturn(new Stat());
+
+        node.init();
         assertEquals(nodeList, new LinkedList<String>(node.getNodeIps()));
         assertEquals(localIp, node.getMasterIp());
     }

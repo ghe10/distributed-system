@@ -2,41 +2,47 @@ package cluster;
 
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
+import utils.ObservableList;
 import utils.StaticUtils;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.LinkedList;
 import java.util.List;
 
 public class ZkNode {
     private ZooKeeper zooKeeper;
     private String myIp;
+    private ObservableList<String> deadEventQueue;
+    private HashSet<String> currentNodes;
     private static String NODE_PATH = "/nodes";
     private static String MASTER_PATH = "/master";
     private static String MASTER_NAME = "master";
 
-    public ZkNode(ZooKeeper zooKeeper) throws IOException {
+    public ZkNode(ZooKeeper zooKeeper, ObservableList<String> deadEventQueue) throws IOException {
         this.zooKeeper = zooKeeper;
+        this.deadEventQueue = deadEventQueue;
     }
 
     public void close() throws InterruptedException {
         zooKeeper.close();
     }
 
-    public void create(String path, byte[] data, CreateMode mode) throws
+    private void create(String path, byte[] data, CreateMode mode) throws
             KeeperException, InterruptedException {
         zooKeeper.create(path, data, ZooDefs.Ids.OPEN_ACL_UNSAFE, mode);
     }
 
-    public Stat znodeExists(String path) throws KeeperException, InterruptedException {
+    private Stat znodeExists(String path) throws KeeperException, InterruptedException {
         return zooKeeper.exists(path, true);
     }
 
-    public void znodeSetWatcher(String path, Watcher watcher) throws KeeperException, InterruptedException {
+    private void znodeSetWatcher(String path, Watcher watcher) throws KeeperException, InterruptedException {
         zooKeeper.getChildren(path, watcher);
     }
 
-    public String getData(String path) throws KeeperException, InterruptedException {
+    private String getData(String path) throws KeeperException, InterruptedException {
         if (znodeExists(path) != null) {
             byte[] bytes = zooKeeper.getData(path, false, null);
             return new String(bytes);
@@ -86,26 +92,80 @@ public class ZkNode {
         create(String.format("%s/%s", NODE_PATH, myIp), myIp.getBytes(), CreateMode.EPHEMERAL);
         // TODO : use real watcher to replace this watcher
         // master watcher should work on run for master
-        NodeWatcher masterWatcher = new NodeWatcher();
+        MasterWatcher masterWatcher = new MasterWatcher();
         // node watcher should work on create new replicas
         NodeWatcher nodeWatcher = new NodeWatcher();
         znodeSetWatcher(MASTER_PATH, masterWatcher);
         znodeSetWatcher(NODE_PATH, nodeWatcher);
     }
 
-    private static class NodeWatcher implements Watcher {
+    private class NodeWatcher implements Watcher {
         public void process(WatchedEvent event) {
             System.out.println("NodeWatcher activated!!*************" + event.getPath() + " " + event.getType());
+            try {
+                if (event.getType().equals(Event.EventType.NodeChildrenChanged)) {
+                    HashSet<String> newNodes = getNodeIps();
+                    currentNodes.removeAll(newNodes);
+                    synchronized (deadEventQueue) {
+                        for (String node : currentNodes) {
+                            deadEventQueue.add(node);
+                        }
+                    }
+                    currentNodes = newNodes;
+                }
+                znodeSetWatcher(NODE_PATH, new NodeWatcher());
+            } catch (KeeperException exception) {
+                exception.printStackTrace();
+            } catch (InterruptedException exception) {
+                exception.printStackTrace();
+            }
         }
+
+    }
+
+    private class MasterWatcher implements Watcher {
+        public void process(WatchedEvent event) {
+            try {
+                if (event.getType().equals(Event.EventType.NodeDeleted)) {
+                    System.out.println("NodeWatcher activated!!*************" + event.getPath() + " " + event.getType());
+                    create(String.format("%s/%s", MASTER_PATH, MASTER_NAME), myIp.getBytes(), CreateMode.EPHEMERAL);
+                }
+                znodeSetWatcher(String.format("%s/%s", MASTER_PATH, MASTER_NAME), new MasterWatcher());
+            } catch (KeeperException exception) {
+                exception.printStackTrace();
+            } catch (InterruptedException exception) {
+                exception.printStackTrace();
+            }
+        }
+    }
+
+
+    public String getMasterIp() {
+        try {
+            return getData(String.format("%s/%s", MASTER_PATH, MASTER_NAME));
+        } catch (KeeperException exception) {
+            exception.printStackTrace();
+            return null;
+        } catch (InterruptedException exception) {
+            exception.printStackTrace();
+            return null;
+        }
+    }
+
+    public boolean isMaster() {
+        String masterIp = getMasterIp();
+        if (masterIp.equals(myIp)) {
+            return true;
+        }
+        return false;
     }
 
     public static void main(String[] args) throws IOException, KeeperException, InterruptedException {
         ZooKeeper zk = new ZooKeeper("192.168.56.101:2181", 1000, null);
-        ZkNode node = new ZkNode(zk);
+        ZkNode node = new ZkNode(zk, new ObservableList<String>(new LinkedList<String>()));
         if (node.znodeExists(NODE_PATH) == null) {
             node.create(NODE_PATH, NODE_PATH.getBytes(), CreateMode.PERSISTENT);
         }
-        //node.znodeSetWatcher(NODE_PATH, new NodeWatcher());
         node.init();
         System.out.println("Check create result " + node.getData(NODE_PATH));
         node.create(String.format("%s/%s", NODE_PATH, "myip0"),

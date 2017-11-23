@@ -14,14 +14,14 @@ import java.util.Observer;
  */
 
 public class ClusterNodeWrapper {
-    private Node node;
+    private ZkNode node;
     private ZooKeeper zooKeeper;
 
     public ClusterNodeWrapper(ObservableList<String> observableList, Observer observer, String hostInfo,
                               int sessionTimeOut) throws IOException, InterruptedException, KeeperException {
         zooKeeper = new ZooKeeper(hostInfo, sessionTimeOut, null);
-        node = new Node(zooKeeper, observableList);
-        node.initNode();
+        node = new ZkNode(zooKeeper, observableList);
+        node.init();
         MembershipHandler.setMembershipHandler(observableList, observer);
     }
 
@@ -30,7 +30,13 @@ public class ClusterNodeWrapper {
     }
 
     public HashSet<String> getNodeIps() {
-        return node.getNodeIps();
+        try {
+            return node.getNodeIps();
+        } catch (KeeperException exception) {
+            return null;
+        } catch (InterruptedException exception) {
+            return null;
+        }
     }
 
     public boolean isMaster() {
