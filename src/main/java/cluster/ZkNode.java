@@ -106,6 +106,7 @@ public class ZkNode {
             System.out.println("NodeWatcher activated!!*************" + event.getPath() + " " + event.getType());
             try {
                 if (event.getType().equals(Event.EventType.NodeChildrenChanged)) {
+                    System.out.println("Start update process");
                     HashSet<String> newNodes = getNodeIps();
                     currentNodes.removeAll(newNodes);
                     synchronized (deadEventQueue) {
