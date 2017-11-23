@@ -109,7 +109,9 @@ public class ZkNode {
                     HashSet<String> newNodes = getNodeIps();
                     currentNodes.removeAll(newNodes);
                     synchronized (deadEventQueue) {
+                        System.out.println("Update dead queue");
                         for (String node : currentNodes) {
+                            System.out.println(node);
                             deadEventQueue.add(node);
                         }
                     }
