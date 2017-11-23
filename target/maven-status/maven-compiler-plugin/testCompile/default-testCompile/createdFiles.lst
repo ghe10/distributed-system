@@ -1,9 +1,0 @@
-utils/ObserveTest.class
-filesystem/scheduler/RandomSchedulerTest.class
-utils/ObservableListTest.class
-filesystem/FileSystemThreadPoolTest.class
-cluster/NodeTest.class
-utils/StaticUtilsTest.class
-filesystem/serializablemodels/FileStorageDataModelTest.class
-cluster/MembershipHandlerTest.class
-zookeeperserver/ZookeeperServerTest.class

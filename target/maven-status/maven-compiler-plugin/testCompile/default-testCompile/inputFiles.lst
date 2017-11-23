@@ -1,9 +1,0 @@
-/home/vm1/ghe10/Distributed-system/src/test/java/cluster/MembershipHandlerTest.java
-/home/vm1/ghe10/Distributed-system/src/test/java/utils/StaticUtilsTest.java
-/home/vm1/ghe10/Distributed-system/src/test/java/filesystem/scheduler/RandomSchedulerTest.java
-/home/vm1/ghe10/Distributed-system/src/test/java/filesystem/serializablemodels/FileStorageDataModelTest.java
-/home/vm1/ghe10/Distributed-system/src/test/java/filesystem/FileSystemThreadPoolTest.java
-/home/vm1/ghe10/Distributed-system/src/test/java/utils/ObserveTest.java
-/home/vm1/ghe10/Distributed-system/src/test/java/zookeeperserver/ZookeeperServerTest.java
-/home/vm1/ghe10/Distributed-system/src/test/java/utils/ObservableListTest.java
-/home/vm1/ghe10/Distributed-system/src/test/java/cluster/NodeTest.java
