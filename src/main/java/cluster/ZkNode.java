@@ -97,7 +97,7 @@ public class ZkNode {
         MasterWatcher masterWatcher = new MasterWatcher();
         // node watcher should work on create new replicas
         NodeWatcher nodeWatcher = new NodeWatcher();
-        znodeSetWatcher(MASTER_PATH, masterWatcher);
+        znodeSetWatcher(String.format("%s/%s", MASTER_PATH, MASTER_NAME), masterWatcher);
         znodeSetWatcher(NODE_PATH, nodeWatcher);
     }
 
