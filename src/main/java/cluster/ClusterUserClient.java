@@ -52,7 +52,7 @@ public class ClusterUserClient {
     public static void main(String args[]) {
         LinkedList<String> linkedList = new LinkedList<String>();
         ObservableList<String> observableList = new ObservableList<String>(linkedList);
-        Observer observer = new BasicObserver();
+        BasicObserver observer = new BasicObserver();
         try {
             ClusterNodeWrapper nodeWrapper =
                     new ClusterNodeWrapper(observableList, observer, HOST_INFO, SESSION_TIMEOUT);

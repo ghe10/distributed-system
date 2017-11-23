@@ -109,13 +109,13 @@ public class ZkNode {
                     System.out.println("Start update process");
                     HashSet<String> newNodes = getNodeIps();
                     currentNodes.removeAll(newNodes);
-                    synchronized (deadEventQueue) {
+                    //synchronized (deadEventQueue) {
                         System.out.println("Update dead queue");
                         for (String node : currentNodes) {
                             System.out.println(node);
                             deadEventQueue.add(node);
                         }
-                    }
+                    //}
                     currentNodes = newNodes;
                 }
                 znodeSetWatcher(NODE_PATH, new NodeWatcher());
