@@ -14,7 +14,7 @@ import java.util.Scanner;
  */
 public class ClusterUserClient {
     private static final String HOST_INFO = "192.168.56.101:2181";
-    private static final int SESSION_TIMEOUT = 60000;
+    private static final int SESSION_TIMEOUT = 600;
     private static final String QUIT = "quit";
     private static final String GET_MASTER = "get-master";
     private static final String GET_NODES = "get-nodes";
