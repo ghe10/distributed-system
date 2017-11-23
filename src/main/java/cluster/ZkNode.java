@@ -89,7 +89,9 @@ public class ZkNode {
         if (znodeExists(String.format("%s/%s", MASTER_PATH, MASTER_NAME)) == null) {
             create(String.format("%s/%s", MASTER_PATH, MASTER_NAME), myIp.getBytes(), CreateMode.EPHEMERAL);
         }
-        create(String.format("%s/%s", NODE_PATH, myIp), myIp.getBytes(), CreateMode.EPHEMERAL);
+        if (znodeExists(String.format("%s/%s", NODE_PATH, myIp)) == null) {
+            create(String.format("%s/%s", NODE_PATH, myIp), myIp.getBytes(), CreateMode.EPHEMERAL);
+        }
         // TODO : use real watcher to replace this watcher
         // master watcher should work on run for master
         MasterWatcher masterWatcher = new MasterWatcher();
@@ -129,6 +131,7 @@ public class ZkNode {
                 System.out.println("MasterWatcher activated!!*************" + event.getPath() + " " + event.getType());
                 if (event.getType().equals(Event.EventType.NodeDeleted)) {
                     create(String.format("%s/%s", MASTER_PATH, MASTER_NAME), myIp.getBytes(), CreateMode.EPHEMERAL);
+                    System.out.println("Master created");
                 }
                 znodeSetWatcher(String.format("%s/%s", MASTER_PATH, MASTER_NAME), new MasterWatcher());
             } catch (KeeperException exception) {
