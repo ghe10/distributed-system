@@ -9,6 +9,7 @@ import filesystem.serializablemodels.FileStorageDataModel;
 import filesystem.serializablemodels.RmiCommunicationDataModel;
 import utils.FileSystemConstants;
 
+import java.net.UnknownHostException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -34,26 +35,30 @@ public class FileSystemOperation extends UnicastRemoteObject
     }
 
     public boolean operation(RmiCommunicationDataModel rmiCommunicationDataModel) throws RemoteException {
-        FileOperationTask task = new FileOperationTask(rmiCommunicationDataModel, scheduler, node, storageInfo);
-        fileSystemThreadPool.addTask(task);
-        // TODO: do sth to check if the task finishes
-        /**
-         * may be we can use protected void afterExecute(Runnable r,
-         * Throwable t) and instance of along with an observer to do this job
-         * The observer should be part of the task runnable
-         *
-         * Maybe wait-notify is enough
-         *
-         * Now we are sync on local variables. Even if multiple concurrent calls on this remote object, there won't be
-         * a problem about task wait
-         */
-        synchronized (task) {
-            try {
-                task.wait();
-            } catch (InterruptedException exception) {
-                exception.printStackTrace();
-                return false;
+        try {
+            FileOperationTask task = new FileOperationTask(rmiCommunicationDataModel, scheduler, node, storageInfo);
+            fileSystemThreadPool.addTask(task);
+            // TODO: do sth to check if the task finishes
+            /**
+             * may be we can use protected void afterExecute(Runnable r,
+             * Throwable t) and instance of along with an observer to do this job
+             * The observer should be part of the task runnable
+             *
+             * Maybe wait-notify is enough
+             *
+             * Now we are sync on local variables. Even if multiple concurrent calls on this remote object, there won't be
+             * a problem about task wait
+             */
+            synchronized (task) {
+                try {
+                    task.wait();
+                } catch (InterruptedException exception) {
+                    exception.printStackTrace();
+                    return false;
+                }
             }
+        } catch (UnknownHostException exception) {
+            return false;
         }
         return true;
     }
@@ -66,30 +71,34 @@ public class FileSystemOperation extends UnicastRemoteObject
         if (fileStorageDataModel == null) {
             return false;
         }
-        FileOperationTask task = new FileOperationTask(rmiCommunicationDataModel, scheduler, node, storageInfo);
-        fileSystemThreadPool.addTask(task);
-        // TODO: do sth to check if the task finishes
-        /**
-         * may be we can use protected void afterExecute(Runnable r,
-         * Throwable t) and instance of along with an observer to do this job
-         * The observer should be part of the task runnable
-         *
-         * Maybe wait-notify is enough
-         *
-         * Now we are sync on local variables. Even if multiple concurrent calls on this remote object, there won't be
-         * a problem about task wait
-         */
-        synchronized (task) {
-            try {
-                task.wait();
-            } catch (InterruptedException exception) {
-                exception.printStackTrace();
-                return false;
+        try {
+            FileOperationTask task = new FileOperationTask(rmiCommunicationDataModel, scheduler, node, storageInfo);
+            fileSystemThreadPool.addTask(task);
+            // TODO: do sth to check if the task finishes
+            /**
+             * may be we can use protected void afterExecute(Runnable r,
+             * Throwable t) and instance of along with an observer to do this job
+             * The observer should be part of the task runnable
+             *
+             * Maybe wait-notify is enough
+             *
+             * Now we are sync on local variables. Even if multiple concurrent calls on this remote object, there won't be
+             * a problem about task wait
+             */
+            synchronized (task) {
+                try {
+                    task.wait();
+                } catch (InterruptedException exception) {
+                    exception.printStackTrace();
+                    return false;
+                }
             }
-        }
-        synchronized (storageInfo) {
-            storageInfo.put(fileStorageDataModel.getFileName(), fileStorageDataModel);
-            return true;
+            synchronized (storageInfo) {
+                storageInfo.put(fileStorageDataModel.getFileName(), fileStorageDataModel);
+                return true;
+            }
+        } catch (UnknownHostException exception) {
+            return false;
         }
     }
 

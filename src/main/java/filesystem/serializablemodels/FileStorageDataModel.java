@@ -40,4 +40,8 @@ public class FileStorageDataModel implements Serializable {
     public void setReplicaIps(HashSet<String> replicaIps) {
         this.replicaIps = replicaIps;
     }
+
+    public void addReplicaIPs(HashSet<String> newReplicaIps) {
+        replicaIps.addAll(newReplicaIps);
+    }
 }

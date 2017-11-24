@@ -36,30 +36,41 @@ public class FileOperationTask implements Runnable {
     private ClusterNodeWrapper node;
     private Hashtable<String, FileStorageDataModel> storageInfo;
     private boolean succeed;
+    private String myIp;
+
+    private static final int REPLICA_NUM = 2;
 
     public FileOperationTask(RmiCommunicationDataModel rmiCommunicationDataModel,
                              RandomScheduler scheduler, ClusterNodeWrapper node,
-                             Hashtable<String, FileStorageDataModel> storageInfo) {
+                             Hashtable<String, FileStorageDataModel> storageInfo) throws UnknownHostException {
         this.rmiCommunicationDataModel = rmiCommunicationDataModel;
         this.scheduler = scheduler;
         this.node = node;
         this.storageInfo = storageInfo;
         succeed = false;
+        String myIp = StaticUtils.getLocalIp();
     }
 
     public void run() {
         if (rmiCommunicationDataModel.getOperation().equals(OperationConstants.ADD_MAIN.getValue())) {
             // TODO : this is the main replica, add operation required, a new RMI should be defined for these operations
+            System.out.println("Add main replica");
             addMain(rmiCommunicationDataModel.getSourceFileName(), rmiCommunicationDataModel.getTargetFileName());
         } else if (rmiCommunicationDataModel.getOperation().equals(OperationConstants.ADD.getValue())) {
             // this is just a replica
+            System.out.println("Add file to local");
             addFileLocal(rmiCommunicationDataModel.getSourceFileName(), rmiCommunicationDataModel.getTargetFileName());
         } else if (rmiCommunicationDataModel.getOperation().equals(OperationConstants.GET.getValue())) {
             // TODO: add some operation
             // send file
             System.out.println("Empty file send operation!");
         } else if (rmiCommunicationDataModel.getOperation().equals(OperationConstants.DELETE.getValue())) {
+            System.out.println("Delete");
             delete(rmiCommunicationDataModel.getTargetFileName());
+        } else if (rmiCommunicationDataModel.getOperation().equals(OperationConstants.SET_MAIN.getValue())) {
+            setMain(rmiCommunicationDataModel.getTargetFileName());
+        } else if (rmiCommunicationDataModel.getOperation().equals(OperationConstants.FAILURE.getValue())) {
+            failure(rmiCommunicationDataModel.getTargetFileName());
         }
         synchronized (this) {
             // notify the waiting RMI function to return
@@ -69,6 +80,60 @@ public class FileOperationTask implements Runnable {
 
     public boolean isSucceed() {
         return succeed;
+    }
+
+    private void failure(String fileName) {
+        FileStorageDataModel fileStorageDataModel = storageInfo.get(fileName);
+        if (fileStorageDataModel.getReplicaIps().size() < REPLICA_NUM) {
+            HashSet<String> existingReplicas = fileStorageDataModel.getReplicaIps();
+            HashSet<String> newReplicaIps = scheduler.randomSchedule(node.getNodeIps(), fileStorageDataModel.getReplicaIps(),
+                    REPLICA_NUM - fileStorageDataModel.getReplicaIps().size());
+            fileStorageDataModel.addReplicaIPs(newReplicaIps);
+            try {
+                for (String ip : newReplicaIps) {
+                    // TODO: send file
+                    addReplica(ip, fileName, fileName, myIp, fileStorageDataModel);
+                    // TODO: I think we need to deal with failure
+                }
+                for (String ip : existingReplicas) {
+                    changeMasterInfo(fileName, fileName, null);
+                }
+            } catch (RemoteException exception) {
+                exception.printStackTrace();
+                return;
+            } catch (NotBoundException exception) {
+                exception.printStackTrace();
+                return;
+            }
+            synchronized (storageInfo) {
+                storageInfo.put(fileName, fileStorageDataModel);
+            }
+        }
+    }
+
+    private void setMain(String fileName) {
+        if (storageInfo.containsKey(fileName)) {
+            storageInfo.get(fileName).setMainReplicaIp(myIp);
+            FileStorageDataModel fileStorageDataModel = storageInfo.get(fileName);
+            if (fileStorageDataModel.getReplicaIps().size() < REPLICA_NUM) {
+                HashSet<String> newReplicaIps = scheduler.randomSchedule(node.getNodeIps(), fileStorageDataModel.getReplicaIps(),
+                        REPLICA_NUM - fileStorageDataModel.getReplicaIps().size());
+                fileStorageDataModel.addReplicaIPs(newReplicaIps);
+                try {
+                    for (String ip : newReplicaIps) {
+                        // TODO: send file
+                        addReplica(ip, fileName, fileName, myIp, fileStorageDataModel);
+                        // TODO: I think we need to deal with failure
+                    }
+                } catch (RemoteException exception) {
+                    exception.printStackTrace();
+                } catch (NotBoundException exception) {
+                    exception.printStackTrace();
+                }
+            }
+        } else {
+            System.out.println("Set main invoked, but no such file stored here");
+        }
     }
 
     private void addReplica(String replicaIp, String targetName, String sourceName, String myIp,
@@ -92,6 +157,7 @@ public class FileOperationTask implements Runnable {
                     Integer.parseInt(FileSystemConstants.REPLICA_NUMBER.getValue()));
             for (String replicaIp : replicas) {
                 // TODO : send file to destination
+                System.out.println(String.format("Send file to %s", replicaIp));
             }
             replicas.add(myIp);
             FileStorageDataModel fileStorageDataModel = new FileStorageDataModel(targetName, myIp, replicas);
@@ -105,10 +171,6 @@ public class FileOperationTask implements Runnable {
             synchronized (storageInfo) {
                 storageInfo.put(targetName, fileStorageDataModel);
             }
-            // add info to master
-            if (changeMasterInfo(targetName, fileStorageDataModel)) {
-                succeed = true;
-            }
         } catch(UnknownHostException exception) {
             succeed = false;
         } catch (NotBoundException exception) {
@@ -119,6 +181,8 @@ public class FileOperationTask implements Runnable {
     }
 
     private void addFileLocal(String sourceName, String targetName) {
+        System.out.println("add file local invoked");
+        /*
         Path source = Paths.get(String.format("%s/%s",
                 FileSystemConstants.TEMP_FILE_FOLDER.getValue(), sourceName));
         Path target = Paths.get(String.format("%s/%s", FileSystemConstants.MAIN_FILE_FOLDER.getValue(), targetName));
@@ -129,12 +193,12 @@ public class FileOperationTask implements Runnable {
             exception.printStackTrace();
             succeed = false;
         }
+        */
     }
 
     private void delete(String targetName) {
-        Path target = Paths.get(String.format("%s/%s", FileSystemConstants.MAIN_FILE_FOLDER.getValue(), targetName));
+        //Path target = Paths.get(String.format("%s/%s", FileSystemConstants.MAIN_FILE_FOLDER.getValue(), targetName));
         try {
-            String myIp = StaticUtils.getLocalIp();
             if (storageInfo.get(targetName).getMainReplicaIp().equals(myIp)) {
                 // TODO: invoke new RMI and tell others to delete
                 HashSet<String> replicas = storageInfo.get(targetName).getReplicaIps();
@@ -153,12 +217,13 @@ public class FileOperationTask implements Runnable {
                                 targetName, OperationConstants.DELETE.getValue(), myIp);
                         operation.operation(rmiCommunicationDataModel);
                     }
+                    if (changeMasterInfo(targetName, replicaIp, null)) {
+                        succeed = false;
+                    }
                 }
             }
-            Files.delete(target);
-            if (changeMasterInfo(targetName, null)) {
-                succeed = true;
-            }
+            succeed = true;
+            //Files.delete(target);
         } catch (IOException exception) {
             exception.printStackTrace();
             succeed = false;
@@ -168,19 +233,17 @@ public class FileOperationTask implements Runnable {
         }
     }
 
-    private boolean changeMasterInfo(String name, FileStorageDataModel fileStorageDataModel) {
+    private boolean changeMasterInfo(String name, String replicaIp, FileStorageDataModel fileStorageDataModel) {
         try {
-            FileSystemOperationInterface operationInterface =
-                    (FileSystemOperationInterface) Naming.lookup("TEMP_NAME");
-            operationInterface.changeMasterStorageInfoOperation(name, fileStorageDataModel);
+            Registry registry = LocateRegistry.getRegistry(replicaIp,
+                    Integer.parseInt(OperationConstants.LISTEN_PORT.getValue()));
+            FileSystemOperationInterface operation = (FileSystemOperationInterface) registry.lookup(FileSystemOperation.class.getName());
+            operation.changeMasterStorageInfoOperation(name, fileStorageDataModel);
             return true;
         } catch (RemoteException exception) {
             exception.printStackTrace();
             return false;
         } catch (NotBoundException exception) {
-            exception.printStackTrace();
-            return false;
-        } catch (MalformedURLException exception) {
             exception.printStackTrace();
             return false;
         }
