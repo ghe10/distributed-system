@@ -35,6 +35,16 @@
                         <includePluginDependencies>false</includePluginDependencies>
                     </configuration>
                 </execution>
+                <execution>
+                    <id>Fs</id>
+                    <goals>
+                        <goal>java</goal>
+                    </goals>
+                    <configuration>
+                        <mainClass>filesystem.FileSystemWrapper</mainClass>
+                        <includePluginDependencies>false</includePluginDependencies>
+                    </configuration>
+                </execution>
             </executions>
         </plugin>
     </plugins>
