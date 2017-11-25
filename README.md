@@ -6,5 +6,7 @@ and observer. The storage nodes also work with RMI calls.
 
 Some notes: all the zk server ip and ports should be passed into zk in each node.
 
+2017/11/25 Stop here
+
 Note : this implementation doesn't satisfy the requirement of cs425, so don't do anything strange! If you are working on
 cs 425, please code from scratch without using high level Java features.
