@@ -53,7 +53,7 @@ public class ZkNode {
 
     private List<String> getChildren(String path) throws KeeperException, InterruptedException {
         if (znodeExists(path) != null) {
-            return  zooKeeper.getChildren(path, false);
+            return zooKeeper.getChildren(path, false);
         }
         return null;
     }
